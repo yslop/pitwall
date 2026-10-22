@@ -1,0 +1,32 @@
+name: Pilot-Feedback · pilot feedback
+description: 2 Minuten · 2 minutes
+labels: [pilot]
+body:
+  - type: markdown
+    attributes:
+      value: "Keine echten Namen, Firmen, Notizen oder Schlüssel. · No real names, companies, notes or keys."
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Pilot-Tag · pilot day
+      options: ["1 (Einrichtung · setup)", "2–3", "4–10", "11–14 (Abschluss · closing)"]
+    validations: {required: true}
+  - type: dropdown
+    id: setup
+    attributes:
+      label: Wie lief die Einrichtung? · How was setup?
+      options: ["Ohne Hilfe geklappt · worked on my own", "Mit kleinen Hürden · small hurdles", "Hat nicht geklappt · did not work"]
+  - type: textarea
+    id: useful
+    attributes: {label: "Was war am nützlichsten? · What was most useful?"}
+  - type: textarea
+    id: friction
+    attributes: {label: "Wo hast du gehakt? · Where did you get stuck?"}
+  - type: dropdown
+    id: recommend
+    attributes:
+      label: Würdest du STAR weiterempfehlen? · Would you recommend STAR?
+      options: ["Ja · yes", "Vielleicht · maybe", "Nein · no"]
+  - type: input
+    id: system
+    attributes: {label: "System", placeholder: "macOS 15 / Windows 11 / Ubuntu 24.04, Python 3.12, KI/AI: …"}

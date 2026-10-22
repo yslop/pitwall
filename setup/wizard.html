@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XLRTE Einrichtung</title>
+<style>
+:root{--bg:#f6f5f2;--card:#fff;--ink:#1d2127;--soft:#5b6370;--line:#e3e1dc;--acc:#0f6b5c;--acc-ink:#fff;--warn:#9a5b00;--bad:#a3262a;--ok:#1e7a3c;--chip:#eef3f1}
+@media (prefers-color-scheme:dark){:root{--bg:#14171b;--card:#1c2026;--ink:#e9ecef;--soft:#a2aab5;--line:#2c323a;--acc:#4fb8a3;--acc-ink:#0b1412;--chip:#1f2b29;--warn:#e0a54a;--bad:#ef7b7e;--ok:#6cc98a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:760px;margin:0 auto;padding:28px 16px 80px}
+header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:18px}
+header b{letter-spacing:.14em;font-size:13px}
+header span{color:var(--soft);font-size:13px}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 18px;padding:0;list-style:none}
+.steps li{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--chip);color:var(--soft)}
+.steps li.on{background:var(--acc);color:var(--acc-ink)}
+.steps li.done{color:var(--ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px}
+h1{font-size:24px;line-height:1.25;margin:0 0 6px}
+.intro{color:var(--soft);margin:0 0 20px}
+label{display:block;font-weight:600;margin:16px 0 6px}
+.help{color:var(--soft);font-size:13px;font-weight:400;margin-top:4px}
+input[type=text],input[type=date],input[type=number],input[type=password],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--ink);font:inherit}
+textarea{min-height:92px}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:400;margin-top:16px}
+.check input{margin-top:4px}
+.prov{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-top:8px}
+.prov button{text-align:left;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:12px;padding:12px;cursor:pointer;font:inherit}
+.prov button.sel{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc) inset}
+.prov small{display:block;color:var(--soft);margin-top:4px}
+.tag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:999px;background:var(--chip);margin-top:6px}
+.tag.ok{color:var(--ok)} .tag.no{color:var(--soft)}
+.row{display:flex;gap:10px;justify-content:space-between;margin-top:26px}
+.btn{border:0;border-radius:10px;padding:11px 18px;font:inherit;font-weight:600;cursor:pointer;background:var(--chip);color:var(--ink)}
+.btn.pri{background:var(--acc);color:var(--acc-ink)}
+.btn:disabled{opacity:.5;cursor:default}
+.note{margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--chip);font-size:14px}
+.note.bad{color:var(--bad)} .note.ok{color:var(--ok)}
+dl{display:grid;grid-template-columns:minmax(120px,38%) 1fr;gap:6px 14px;margin:0}
+dt{color:var(--soft)} dd{margin:0;word-break:break-word}
+ul.msgs{padding-left:18px}
+.promise{border-left:3px solid var(--acc);padding:2px 0 2px 12px;margin:14px 0;color:var(--soft)}
+</style>
+</head>
+<body>
+<main>
+  <header><b>XLRTE</b><span id="prod"></span></header>
+  <ol class="steps" id="steps"></ol>
+  <section class="card" id="view"></section>
+</main>
+<script>
+/*__BOOT__*/
+const B = window.BOOT, S = B.schema, P = B.providers;
+const UI = {
+  de: { start: "Los geht’s", next: "Weiter", back: "Zurück", save: "Speichern", close: "Fenster schließen", closed: "Du kannst dieses Fenster schließen.",
+    welcome: "Willkommen", ai: "KI-Anbindung", privacy: "Datenschutz", review: "Prüfen", done: "Fertig", lang: "Sprache",
+    promise: "Deine Angaben bleiben in diesem Ordner auf deinem Rechner. Dieses Fenster läuft lokal (127.0.0.1) und sendet nur dann etwas ins Netz, wenn du bei der KI-Anbindung ausdrücklich auf „Verbindung testen“ klickst.",
+    duration: m => `Dauer: etwa ${m} Minuten. Alles lässt sich später ändern: `, missing: "Bitte ausfüllen: ",
+    aiIntro: "Wähle, womit du arbeiten willst. Abo, eigener Schlüssel oder lokales Modell – oder ganz ohne KI.", remote: "entfernt", local: "lokal",
+    installed: "installiert", notInstalled: "nicht installiert", running: n => `läuft · ${n} Modelle`, notRunning: "läuft nicht", keyThere: "Schlüssel vorhanden",
+    key: "API-Schlüssel", keyKeep: "bereits gespeichert – leer lassen zum Behalten", keyPaste: "einfügen",
+    keyHelp: "Wird nur in <code>.env</code> in diesem Ordner gespeichert (Dateirechte 600), nie in den Einstellungen, nie im Log.",
+    model: "Modell (optional)", address: "Adresse", modelLocal: "Modell", cli: "Du nutzt dein eigenes Abo. Anmelden tust du dich in der App selbst; diese Einrichtung sieht keine Zugangsdaten.", install: "Installation", test: "Verbindung testen", testing: "Prüfe …",
+    privIntro: "Governance by Design: Du entscheidest, was deinen Rechner verlassen darf.", localOnly: "Nur lokal arbeiten",
+    localHelp: "Sperrt jeden entfernten KI-Anbieter, auch wenn er später im Code aufgerufen würde. Mit Ollama oder einem lokalen Server bleibt alles auf dem Rechner.",
+    telemetry: "Keine Telemetrie. Kein Konto. Protokolliert wird nur, <i>dass</i> eine KI-Anfrage lief (Zeit, Anbieter, Zeichenzahl), nie ihr Inhalt: <code>logs/ai_calls.jsonl</code>.",
+    conflict: p => `„Nur lokal“ passt nicht zu ${p}. Wähle einen lokalen Anbieter oder „Ohne KI“.`, allRight: "Alles richtig?", saveIntro: "Mit „Speichern“ wird dieser Ordner eingerichtet.",
+    yes: "ja", no: "nein", keyWill: "Schlüssel wird in .env gespeichert", doneTitle: "Fertig eingerichtet", aiLabel: "KI" },
+  en: { start: "Let’s go", next: "Next", back: "Back", save: "Save", close: "Close window", closed: "You can close this window now.",
+    welcome: "Welcome", ai: "AI connection", privacy: "Privacy", review: "Review", done: "Done", lang: "Language",
+    promise: "Your answers stay in this folder on your computer. This window runs locally (127.0.0.1) and only sends something over the network when you explicitly click “Test connection” in the AI step.",
+    duration: m => `Takes about ${m} minutes. You can change everything later: `, missing: "Please fill in: ",
+    aiIntro: "Choose what you want to work with: a subscription, your own key or a local model – or no AI at all.", remote: "remote", local: "local",
+    installed: "installed", notInstalled: "not installed", running: n => `running · ${n} models`, notRunning: "not running", keyThere: "key present",
+    key: "API key", keyKeep: "already saved – leave empty to keep it", keyPaste: "paste here",
+    keyHelp: "Stored only in <code>.env</code> in this folder (file mode 600), never in the settings, never in a log.",
+    model: "Model (optional)", address: "Address", modelLocal: "Model", cli: "You use your own subscription and sign in inside that app; this setup never sees your credentials.", install: "Install", test: "Test connection", testing: "Checking …",
+    privIntro: "Governance by design: you decide what may leave your computer.", localOnly: "Work locally only",
+    localHelp: "Blocks every remote AI provider, even if code called it later. With Ollama or a local server everything stays on your machine.",
+    telemetry: "No telemetry. No account. Only the fact <i>that</i> an AI request ran is logged (time, provider, size), never its content: <code>logs/ai_calls.jsonl</code>.",
+    conflict: p => `“Local only” does not fit ${p}. Pick a local provider or “No AI”.`, allRight: "All correct?", saveIntro: "“Save” sets up this folder.",
+    yes: "yes", no: "no", keyWill: "key will be stored in .env", doneTitle: "All set", aiLabel: "AI" } };
+const PROV_EN = { "none": "No AI (everything deterministic still works)", "claude-code": "Claude Code (Claude Pro/Max subscription)", "codex": "Codex CLI (ChatGPT subscription)",
+  "gemini-cli": "Gemini CLI (Google account)", "anthropic": "Anthropic API (key)", "openai": "OpenAI API (key)", "google": "Google Gemini API (key)", "mistral": "Mistral API (EU provider, key)",
+  "ollama": "Ollama (local model, nothing leaves your computer)", "openai-compatible": "Local server, OpenAI-compatible (LM Studio, vLLM …)" };
+let LANG = (() => { try { return localStorage.getItem("xlrte.lang"); } catch (e) { return null; } })() || ((B.settings || {}).answers || {}).ui_language || (navigator.language || "de").slice(0, 2);
+if (!UI[LANG]) LANG = "en";
+const T = () => UI[LANG];
+const L = v => v && typeof v === "object" && !Array.isArray(v) ? (v[LANG] || v.de || v.en || "") : (v == null ? "" : v);
+const PL = pid => LANG === "en" ? PROV_EN[pid] || P[pid].label : P[pid].label;
+const prev = B.settings || {};
+const state = { i: 0, answers: Object.assign({}, prev.answers || {}), ai: Object.assign({ provider: "none", model: "", base_url: "", key: "" }, prev.ai || {}),
+  privacy: Object.assign({ local_only: false }, prev.privacy || {}), detect: null, test: null };
+const pages = [{ id: "welcome", tk: "welcome" }].concat(S.steps.map(s => Object.assign({ kind: "form" }, s)),
+  [{ id: "ai", tk: "ai" }, { id: "privacy", tk: "privacy" }, { id: "summary", tk: "review" }, { id: "done", tk: "done" }]);
+const ptitle = p => p.tk ? T()[p.tk] : L(p.title);
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const api = (path, body) => fetch(path, { method: body ? "POST" : "GET", headers: { "X-Setup-Token": B.token, "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined }).then(r => r.json());
+function header() { $("#prod").innerHTML = `${esc(L(S.product_label) || S.product || "")} · <a href="#" id="langToggle">${LANG === "de" ? "English" : "Deutsch"}</a>`; document.documentElement.lang = LANG;
+  $("#langToggle").onclick = e => { e.preventDefault(); LANG = LANG === "de" ? "en" : "de"; try { localStorage.setItem("xlrte.lang", LANG); } catch (x) {} state.answers.ui_language = LANG; render(); }; }
+
+function steps() {
+  header(); state.answers.ui_language = LANG;
+  $("#steps").innerHTML = pages.map((p, k) => `<li class="${k === state.i ? "on" : k < state.i ? "done" : ""}">${esc(ptitle(p))}</li>`).join("");
+}
+function nav(nextLabel, nextOk = true) {
+  return `<div class="row"><button class="btn" id="back" ${state.i === 0 ? "disabled" : ""}>${T().back}</button><button class="btn pri" id="next" ${nextOk ? "" : "disabled"}>${esc(nextLabel || T().next)}</button></div>`;
+}
+function bindNav(onNext) {
+  const b = $("#back"); if (b) b.onclick = () => { state.i = Math.max(0, state.i - 1); render(); };
+  const n = $("#next"); if (n) n.onclick = () => { if (onNext && onNext() === false) return; state.i++; render(); };
+}
+function field(f) {
+  const v = state.answers[f.key] !== undefined ? state.answers[f.key] : (f.type === "lines" ? (f.default_list || []) : f.default);
+  const help = f.help ? `<div class="help">${esc(L(f.help))}</div>` : "";
+  const id = "f_" + f.key;
+  if (f.type === "checkbox") return `<label class="check"><input type="checkbox" id="${id}" ${v ? "checked" : ""}><span>${esc(L(f.label))}${help}</span></label>`;
+  let input;
+  if (f.type === "select") input = `<select id="${id}">${f.options.map(o => `<option value="${esc(o.value)}" ${o.value === v ? "selected" : ""}>${esc(L(o.label))}</option>`).join("")}</select>`;
+  else if (f.type === "textarea") input = `<textarea id="${id}" placeholder="${esc(L(f.placeholder))}">${esc(v || "")}</textarea>`;
+  else if (f.type === "lines") input = `<textarea id="${id}" placeholder="${esc(L(f.placeholder) || (LANG === "de" ? "Eine Angabe pro Zeile" : "One per line"))}">${esc((v || []).join("\n"))}</textarea>`;
+  else input = `<input type="${f.type === "date" ? "date" : f.type === "number" ? "number" : "text"}" id="${id}" value="${esc(v == null ? "" : v)}" placeholder="${esc(L(f.placeholder))}">`;
+  return `<label for="${id}">${esc(L(f.label))}${f.required ? " *" : ""}</label>${input}${help}`;
+}
+function readForm(step) {
+  let missing = [];
+  step.fields.forEach(f => {
+    const el = document.getElementById("f_" + f.key);
+    let v = f.type === "checkbox" ? el.checked : f.type === "lines" ? el.value.split("\n").map(x => x.trim()).filter(Boolean) : f.type === "number" ? (el.value === "" ? null : Number(el.value)) : el.value.trim();
+    state.answers[f.key] = v;
+    if (f.required && (v === "" || v == null || (Array.isArray(v) && !v.length))) missing.push(L(f.label));
+  });
+  return missing;
+}
+
+function render() {
+  steps();
+  const p = pages[state.i], V = $("#view");
+  if (p.id === "welcome") {
+    V.innerHTML = `<h1>${esc(L(S.title))}</h1><p class="intro">${esc(L(S.intro))}</p>
+      <div class="promise">${T().promise}</div>
+      <p class="help">${T().duration(esc(S.minutes || 5))}<code>python3 setup/xlrte_setup.py</code></p>` + nav(T().start);
+    return bindNav();
+  }
+  if (p.kind === "form") {
+    V.innerHTML = `<h1>${esc(L(p.title))}</h1><p class="intro">${esc(L(p.intro))}</p>${p.fields.map(field).join("")}<div id="err"></div>` + nav();
+    return bindNav(() => { const m = readForm(p); if (m.length) { $("#err").innerHTML = `<div class="note bad">${T().missing}${esc(m.join(", "))}</div>`; return false; } });
+  }
+  if (p.id === "ai") return renderAI(V);
+  if (p.id === "privacy") {
+    V.innerHTML = `<h1>${T().privacy}</h1><p class="intro">${T().privIntro}</p>
+      <label class="check"><input type="checkbox" id="lo" ${state.privacy.local_only ? "checked" : ""}><span>${T().localOnly}
+      <div class="help">${T().localHelp}</div></span></label>
+      <div class="note">${T().telemetry}</div><div id="err"></div>` + nav();
+    return bindNav(() => {
+      state.privacy.local_only = $("#lo").checked;
+      if (state.privacy.local_only && P[state.ai.provider].remote) { $("#err").innerHTML = `<div class="note bad">${T().conflict(esc(PL(state.ai.provider)))}</div>`; return false; }
+    });
+  }
+  if (p.id === "summary") {
+    const rows = S.steps.flatMap(s => s.fields).map(f => { let v = state.answers[f.key]; if (Array.isArray(v)) v = v.join(", "); if (typeof v === "boolean") v = v ? T().yes : T().no;
+      const o = (f.options || []).find(x => x.value === v); if (o) v = L(o.label); return `<dt>${esc(L(f.label))}</dt><dd>${esc(v || "—")}</dd>`; }).join("");
+    V.innerHTML = `<h1>${T().allRight}</h1><p class="intro">${T().saveIntro}</p><dl>${rows}
+      <dt>${T().aiLabel}</dt><dd>${esc(PL(state.ai.provider))}${state.ai.model ? " · " + esc(state.ai.model) : ""}${state.ai.key ? " · " + T().keyWill : ""}</dd>
+      <dt>${T().localOnly}</dt><dd>${state.privacy.local_only ? T().yes : T().no}</dd></dl><div id="err"></div>` + nav(T().save);
+    return bindNav(() => {
+      $("#next").disabled = true;
+      api("/api/save", { answers: state.answers, ai: state.ai, privacy: state.privacy }).then(r => {
+        if (!r.ok) { $("#err").innerHTML = `<div class="note bad">${esc(r.error)}</div>`; $("#next").disabled = false; return; }
+        state.messages = r.messages; state.ai.key = ""; state.i++; render();
+      });
+      return false;
+    });
+  }
+  if (p.id === "done") {
+    V.innerHTML = `<h1>${T().doneTitle}</h1><ul class="msgs">${(state.messages || []).map(m => `<li>${esc(m)}</li>`).join("")}</ul>
+      <p>${L(S.next_steps)}</p><div class="row"><span></span><button class="btn pri" id="quit">${T().close}</button></div>`;
+    $("#quit").onclick = () => api("/api/quit", {}).then(() => { V.innerHTML = `<h1>${T().closed}</h1>`; });
+  }
+}
+
+function renderAI(V) {
+  const d = state.detect;
+  const tag = pid => {
+    const p = P[pid]; if (!d) return "";
+    if (p.kind === "cli") { const c = d.cli[pid] || {}; return c.installed ? `<span class="tag ok">${T().installed}</span>` : `<span class="tag no">${T().notInstalled}</span>`; }
+    if (pid === "ollama") return d.local.ollama.running ? `<span class="tag ok">${T().running(d.local.ollama.models.length)}</span>` : `<span class="tag no">${T().notRunning}</span>`;
+    if (p.kind === "api") return d.keys[pid] ? `<span class="tag ok">${T().keyThere}</span>` : "";
+    return "";
+  };
+  const p = P[state.ai.provider];
+  const extra = p.kind === "api" ? `<label for="key">${T().key}</label><input type="password" id="key" autocomplete="off" placeholder="${d && d.keys[state.ai.provider] ? T().keyKeep : T().keyPaste}">
+      <div class="help">${T().keyHelp}</div>
+      <label for="model">${T().model}</label><input type="text" id="model" value="${esc(state.ai.model || p.default_model || "")}">`
+    : p.kind === "local" ? `<label for="base">${T().address}</label><input type="text" id="base" value="${esc(state.ai.base_url || p.base_url || "")}">
+      <label for="model">${T().modelLocal}</label><input type="text" id="model" value="${esc(state.ai.model || "")}" placeholder="llama3.2">`
+    : p.kind === "cli" ? `<div class="note">${T().cli}${p.install ? ` ${T().install}: <code>${esc(p.install)}</code>` : ""}</div>` : "";
+  V.innerHTML = `<h1>${T().ai}</h1><p class="intro">${T().aiIntro}</p>
+    <div class="prov">${Object.keys(P).map(pid => `<button data-p="${pid}" class="${pid === state.ai.provider ? "sel" : ""}">${esc(PL(pid))}<small>${P[pid].remote ? T().remote : T().local}</small>${tag(pid)}</button>`).join("")}</div>
+    ${extra}<div class="row" style="margin-top:14px;justify-content:flex-start"><button class="btn" id="test">${T().test}</button></div><div id="tres"></div>` + nav();
+  V.querySelectorAll(".prov button").forEach(b => b.onclick = () => { state.ai.provider = b.dataset.p; state.ai.model = ""; state.ai.base_url = ""; state.test = null; renderAI(V); steps(); });
+  const read = () => { const k = $("#key"), m = $("#model"), b = $("#base"); if (k && k.value.trim()) state.ai.key = k.value.trim(); if (m) state.ai.model = m.value.trim(); if (b) state.ai.base_url = b.value.trim(); };
+  $("#test").onclick = () => { read(); $("#tres").innerHTML = `<div class="note">${T().testing}</div>`;
+    api("/api/test", { provider: state.ai.provider, key: state.ai.key, base_url: state.ai.base_url, local_only: state.privacy.local_only, lang: LANG }).then(r => {
+      $("#tres").innerHTML = `<div class="note ${r.ok ? "ok" : "bad"}">${esc(r.detail)}${r.models && r.models.length ? "<br><small>" + esc(r.models.slice(0, 8).join(" · ")) + "</small>" : ""}</div>`; }); };
+  bindNav(() => { read(); });
+  if (!d) api("/api/detect").then(x => { state.detect = x; if (pages[state.i].id === "ai") renderAI(V); });
+}
+render();
+</script>
+</body>
+</html>

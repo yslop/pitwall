@@ -1,0 +1,17 @@
+name: Idee oder Verbesserung
+description: Vorschlag für eine neue Funktion oder einen besseren Ablauf
+labels: [idea]
+body:
+  - type: textarea
+    id: problem
+    attributes: {label: Welches Problem löst das?, description: Für wen, in welcher Situation}
+    validations: {required: true}
+  - type: textarea
+    id: proposal
+    attributes: {label: Vorschlag}
+  - type: checkboxes
+    id: local
+    attributes:
+      label: Lokal zuerst
+      options:
+        - label: Das lässt sich ohne neuen Netzwerkaufruf umsetzen (oder ich begründe, warum nicht)

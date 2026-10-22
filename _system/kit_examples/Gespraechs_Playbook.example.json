@@ -1,0 +1,9 @@
+{
+  "items": [
+    {"id": "zeitdruck", "titel": "Zeitdruck nicht mehrfach nennen", "problem": "Verfügbarkeit und Gründe mehrfach anzubieten erzeugt Druck.", "stattdessen": "Ein Satz, nur auf Nachfrage: kurzfristig verfügbar, mehrere Verfahren.", "quelle": "Beispiel"}
+  ],
+  "panik": [
+    {"frage": "Bei Blackout", "antwort": "„Darf ich kurz zurückspulen?“ Trinken, dann die drei Anker der Rolle."},
+    {"frage": "„Wann könntest du?“", "antwort": "Kurzfristig. Ich bin in mehreren Verfahren. Punkt, keine Begründung."}
+  ]
+}

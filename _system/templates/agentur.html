@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="card" style="margin-bottom:16px">
+  <div class="body" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;background:var(--panel-2);border-bottom:1px solid var(--line-2)">
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--brand-2);text-transform:uppercase;letter-spacing:0.06em">
+        Nachweis über Eigenbemühungen nach § 138 SGB III
+      </div>
+      <div style="font-size:16px;font-weight:750;color:var(--ink);margin-top:2px">
+        Bewerbungsübersicht für die Agentur für Arbeit
+      </div>
+    </div>
+    <button class="chip on btn-print" onclick="window.print()" style="font-size:12px;padding:6px 14px;cursor:pointer">
+      🖨️ Drucken / PDF speichern
+    </button>
+  </div>
+  <div class="body" style="font-size:12px;line-height:1.6;color:var(--ink-2)">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:8px">
+      <div><b>Bewerber:</b> {{ applicant }}</div>
+      <div><b>Berichtszeitraum:</b> {{ period }}</div>
+      <div><b>Stand der Aufstellung:</b> {{ today_de }}</div>
+      <div><b>Zielpositionen:</b> {{ targets }}</div>
+    </div>
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line-2)">
+      <b>Bewerbungs- und Akquisekanäle:</b> Direktbewerbungen über Unternehmensportale, Executive Search / Personalberater, Branchennetzwerke (LinkedIn, Bundesverband), persönliche Empfehlungen.<br>
+      <b>Nachweisablage:</b> Sämtliche Anschreiben, Lebensläufe, Stellenausschreibungen und Eingangs-/Verfahrensbestätigungen liegen strukturiert im Bewerbungsordner unter <span class="mono">Bewerbungsordner / &lt;UID&gt; &lt;Unternehmen&gt;</span> vor.
+    </div>
+  </div>
+</div>
+
+<div class="kpis" style="margin-bottom:18px">
+  <div class="kpi"><div class="l">Bewerbungen gesamt</div><div class="v brand">{{ n_total }}</div><div class="h">{{ period }}</div></div>
+  <div class="kpi"><div class="l">Laufende Verfahren</div><div class="v ok">{{ n_open }}</div><div class="h">Stand {{ today_de }}</div></div>
+  <div class="kpi"><div class="l">Vorstellungsgespräche</div><div class="v">{{ n_interviews }}</div><div class="h">{{ interview_rate }}% Interviewquote</div></div>
+  <div class="kpi"><div class="l">Abgeschlossen</div><div class="v idle">{{ n_closed }}</div><div class="h">{{ close_rate }}% Abschlussquote</div></div>
+</div>
+
+{% for stage, group in by_stage %}
+<div class="card" style="margin-bottom:16px;page-break-inside:avoid;break-inside:avoid">
+  <h2>{{ stage_de[stage] }} <span class="count">{{ group|length }}</span></h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:55px">Nr.</th>
+        <th>Unternehmen</th>
+        <th>Position / Rolle</th>
+        <th>Bereich</th>
+        <th style="width:90px">Bewerbung</th>
+        <th style="width:130px">Aktueller Status</th>
+        <th>Rückmeldung / Stand</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for r in group %}
+      <tr>
+        <td class="num" style="color:var(--muted)">{{ r.uid }}</td>
+        <td class="co">{{ r.company }}</td>
+        <td class="role">{{ r.role }}</td>
+        <td style="color:var(--muted);font-size:11px">{{ r.lane }}</td>
+        <td class="num">{{ r.applied_de }}</td>
+        <td>
+          <span class="pill st-{{ r.stage }}" style="font-size:10px;padding:1px 7px">{{ r.stage }}</span>
+          {% if r.outcome %}<span style="font-size:10.5px;color:var(--muted);display:block;margin-top:2px">{{ r.outcome_de }}</span>{% endif %}
+        </td>
+        <td><div class="note" style="-webkit-line-clamp:3;font-size:11.5px">{{ r.note_short }}</div></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endfor %}
+{% endblock %}
+{% block data_scripts %}
+<!-- Static compliance view: raw pipeline data excluded for GDPR compliance -->
+{% endblock %}
+

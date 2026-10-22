@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="{{ lang|default('de') }}" data-today="{{ today }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ title }}</title>
+{% if favicon_uri %}<link rel="icon" href="{{ favicon_uri|safe }}">{% endif %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;700&family=Nunito+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>{{ theme_css|safe }}</style>
+{% block head %}{% endblock %}
+</head>
+<body>
+<header class="top">
+  {% if logo_svg %}<div class="brandmark" role="img" aria-label="XLRTE">{{ logo_svg|safe }}</div>{% endif %}
+  <div class="top-row">
+    <div>
+      <h1>{{ heading }}</h1>
+      <div class="sub">{{ subtitle|safe }}</div>
+    </div>
+    <button class="theme-toggle" id="theme-toggle" title="Design umschalten (Hell / Dunkel / System)">💻 Auto</button>
+  </div>
+  {% if nav %}<nav class="views">
+    {% for n in nav %}<a href="{{ n.href }}"{% if n.on %} class="on"{% endif %}>{{ n.label }}</a>{% endfor %}
+  </nav>{% endif %}
+</header>
+<div class="wrap">
+{% block body %}{% endblock %}
+</div>
+<footer class="meta">
+  {{ footer|safe }}
+</footer>
+{% block data_scripts %}
+<script type="application/json" id="DATA">{{ data_json|safe }}</script>
+<script>{{ core_js|safe }}</script>
+{{ i18n_js|safe }}
+{% endblock %}
+{% block script %}{% endblock %}
+</body>
+</html>

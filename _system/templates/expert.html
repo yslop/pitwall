@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+.xgrid { display: grid; gap: 16px; }
+.xcard { border-left: 3px solid var(--xl-accent-text); }
+.xhead { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
+.xhead .who { font-family: var(--font-head); font-weight: 700; font-size: 16px; }
+.xchip { font-size: 11px; padding: 1px 8px; border-radius: 999px; background: var(--panel-3); color: var(--ink); white-space: nowrap; }
+.xchip.open { border: 1px solid var(--xl-accent-text); color: var(--xl-accent-text); background: transparent; }
+.xnext { margin: 8px 0; font-size: 13px; }
+.xnext.overdue b { color: var(--xl-accent-text); }
+.xcols { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.xrow { display: grid; grid-template-columns: 2.2em 1fr; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+.xrow:last-child { border-bottom: 0; }
+.xok { font-weight: 700; color: var(--xl-ok); }
+.xno { font-weight: 700; color: var(--xl-accent-text); }
+.xtl { display: grid; grid-template-columns: 4.2em 1fr; gap: 8px; padding: 4px 0; font-size: 13px; }
+.xtl .d { color: var(--muted); font-variant-numeric: tabular-nums; }
+.empty { color: var(--muted); font-size: 13px; margin: 4px 0; }
+h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 10px 0 4px; }
+</style>
+{% endblock %}
+{% block body %}
+<div class="xgrid">
+  {% if cards %}
+  {% for c in cards %}
+  <section class="card xcard" aria-label="{{ c.company }}">
+    <div class="xhead"><span class="who">{{ c.company }} · {{ c.role }}</span>
+      <span><span class="xchip">{{ c.stage }}</span> <span class="xchip">{{ c.idle }} d seit letztem Ereignis</span> <span class="xchip">uid {{ c.uid }}</span>{% if c.open_items %} <span class="xchip open">{{ c.open_items }} offen</span>{% endif %}</span></div>
+    <div class="xnext {{ c.overdue }}"><b>Nächster Schritt:</b> {{ c.next_action }}{% if c.due %} · fällig {{ c.due }}{% endif %}{% if c.coverage %} · {{ c.coverage }}{% endif %}</div>
+    {% if c.note %}<p class="empty">{{ c.note }}</p>{% endif %}
+    <div class="xcols">
+      <div><h3>Vorbereitung</h3>
+        {% for k in c.checks %}<div class="xrow"><span class="{% if k.ok %}xok{% else %}xno{% endif %}">{% if k.ok %}✓{% else %}●{% endif %}</span><span><b>{{ k.label }}</b>{% if k.detail %}<br><span class="empty">{{ k.detail }}</span>{% endif %}{% if k.todo %}<br><span class="mono">{{ k.todo }}</span>{% endif %}</span></div>{% endfor %}
+      </div>
+      <div><h3>Verlauf</h3>
+        {% if c.timeline %}{% for t in c.timeline %}<div class="xtl"><span class="d">{{ t.date }}</span><span>{{ t.text }}</span></div>{% endfor %}
+        {% else %}<p class="empty">Noch keine Stufenwechsel in transitions.csv.</p>{% endif %}
+      </div>
+    </div>
+  </section>
+  {% endfor %}
+  {% else %}
+  <section class="card"><p class="empty">Aktuell ist kein Verfahren in einer Gesprächsphase (Screening, Interviewing, Final).</p></section>
+  {% endif %}
+</div>
+{% endblock %}

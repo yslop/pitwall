@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% block head %}<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>{% endblock %}
+{% block body %}
+<div class="kpis" id="kpis"></div>
+<div class="grid g2" style="margin-bottom:16px">
+  <div class="card">
+    <h2>⚡ Was jetzt ansteht <span class="count" id="n-act"></span></h2>
+    <div id="actions" class="scroll" style="height:min(54vh,580px)"></div>
+  </div>
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line-2);padding:10px 18px">
+      <h2 style="margin:0;padding:0;border:none">🔥 Live-Prozesse in Gesprächen <span class="count" id="n-live"></span></h2>
+      <a href="03_briefings.html" class="chip on" style="font-size:11px;padding:3px 9px">Briefing Dossiers ↗</a>
+    </div>
+    <div id="live"></div>
+  </div>
+</div>
+<div class="grid g2" style="margin-bottom:16px">
+  <div class="card">
+    <h2>🌡️ Wird kalt — Stillstand &gt;21 Tage <span class="count" id="n-cold"></span></h2>
+    <div class="legend">
+      <span><i style="background:var(--warn)"></i>22–45 Tage still (Nachfassen empfohlen)</span>
+      <span><i style="background:var(--bad)"></i>&gt;45 Tage still (Lapse-Kandidaten)</span>
+    </div>
+    <div id="cold"></div>
+  </div>
+  <div class="card">
+    <h2>📊 Bewerbungstrichter <span class="count">Aktiver Bestand</span></h2>
+    <div class="body">
+      <div class="chart-container" style="height:220px">
+        <canvas id="funnel"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <h2>🧹 Abgleich Ordner ↔ Datenbestand <span class="count" id="n-hyg"></span></h2>
+  <div class="body" id="hygiene"></div>
+</div>
+{% endblock %}
+{% block script %}<script>
+const D = JS26.load(), R = D.rows, open = R.filter(r => r.stage !== "Closed");
+const st = s => open.filter(r => r.stage === s).length;
+const liveStages = ["Screening", "Interviewing", "Final"];
+const liveCount = open.filter(r => liveStages.includes(r.stage)).length;
+
+/* Conversation cockpit (live guide, bio, panic card) of a process, when the Sync has written one */
+const cockChip = r => {
+  const c = JS26.cockpitLink(r.uid, D.intel);
+  return c ? `<a href="${JS26.esc(c.href)}" target="_blank" rel="noopener" class="chip on" title="Gesprächs-Cockpit ${JS26.de(c.modified)}: Live-Leitfaden, Bio für die Rolle, Panikkarte" style="padding:2px 7px;font-size:10.5px" onclick="event.stopPropagation()">Gespräch ↗</a>` : "";
+};
+
+const kpi = (l, v, h, c, filter) => `
+  <div class="kpi" ${filter ? `data-filter="${filter}" onclick="location.href='02_pipeline_crm.html?preset=${filter}'"` : ""}>
+    <div class="l">${l}</div>
+    <div class="v ${c || ""}">${v}</div>
+    <div class="h">${h}</div>
+  </div>`;
+
+document.getElementById("kpis").innerHTML =
+  kpi("Offen Gesamt", open.length, "aktive Bewerbungen", "brand", "open")
+ +kpi("In Gesprächen", liveCount, "Screening / Interview / Final", liveCount ? "ok" : "idle", "live")
+ +kpi("Endrunde", st("Final"), "Vertrag in greifbarer Nähe", st("Final") ? "ok" : "idle", "final")
+ +kpi("Im Interview", st("Interviewing"), "Fach- & Panelrunden", st("Interviewing") ? "ok" : "idle", "interviewing")
+ +kpi("Screening", st("Screening"), "Erstgespräche / HR", "", "screening")
+ +kpi("Beworben", st("Applied"), "Warten auf Erstkontakt", "", "applied")
+ +kpi("Interview-Quote", D.interview_rate + "%", `${D.interviews_reached} Verfahren erreicht`, "brand", "live")
+ +kpi("Tage bis Zielmarke", D.days_left, "Zielmarke: " + (D.goal_label || "dein Ziel"), D.days_left < 30 ? "warn" : "");
+
+/* ---- Actions: Next actions ordered by due date ---- */
+const acts = open.filter(r => r.next_action).sort((a, b) => (a.due || "9") < (b.due || "9") ? -1 : 1);
+document.getElementById("n-act").textContent = acts.length;
+document.getElementById("actions").innerHTML = acts.map(r => {
+  const d = r.due ? JS26.days(r.due) : null;
+  const k = d == null ? "later" : d > 0 ? "overdue" : d === 0 ? "today" : d > -8 ? "soon" : "later";
+  const lbl = r.due ? (d > 0 ? `+${d}d über` : d === 0 ? "HEUTE" : JS26.de(r.due)) : "offen";
+  const slug = ("b" + r.uid + "-" + r.role).toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40);
+  return `
+    <div class="act" onclick="JS26.openDrawer(${JSON.stringify(r).replace(/"/g, '&quot;')}, this)">
+      <div class="when ${k}">${lbl}</div>
+      <div class="what">
+        <div class="hd">
+          ${JS26.pill(r.stage)}
+          <span class="co">${JS26.esc(r.company)}</span>
+          <span style="color:var(--muted);font-weight:400">· ${JS26.esc(r.role)}</span>
+          ${r.score ? JS26.scoreBadge(r.score, r.stage) : ""}
+        </div>
+        <div class="dt">${JS26.esc(r.next_action)}</div>
+      </div>
+      <div style="flex:none;display:flex;gap:6px;align-items:center">
+        ${liveStages.includes(r.stage) ? `<a href="03_briefings.html#${slug}" class="chip" style="padding:3px 8px;font-size:11px" onclick="event.stopPropagation()">Briefing ↗</a>` : ""}
+        ${liveStages.includes(r.stage) ? cockChip(r) : ""}
+      </div>
+    </div>`;
+}).join("") || `<div class="body" style="color:var(--muted);text-align:center;padding:24px">Keine offenen Aufgaben erfasst.</div>`;
+
+/* ---- Live processes ---- */
+const live = open.filter(r => liveStages.includes(r.stage)).sort((a, b) => b.score - a.score);
+document.getElementById("n-live").textContent = live.length;
+document.getElementById("live").innerHTML = `
+  <div class="scroll" style="height:min(54vh,580px)">
+    <table style="height:100%">
+      <thead>
+        <tr>
+          <th>Unternehmen & Rolle</th>
+          <th>Stufe</th>
+          <th style="text-align:right">Signal</th>
+          <th style="text-align:right">Score</th>
+          <th>Aktion</th>
+        </tr>
+      </thead>
+      <tbody>` +
+  live.map(r => {
+    const h = JS26.health(r);
+    const slug = ("b" + r.uid + "-" + r.role).toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40);
+    return `
+      <tr onclick="JS26.openDrawer(${JSON.stringify(r).replace(/"/g, '&quot;')}, this)">
+        <td style="background:${JS26.heat(r.score)}">
+          <div class="co">${JS26.esc(r.company)}</div>
+          <div class="role">${JS26.esc(r.role)} <span style="color:var(--muted);font-size:10.5px">(${JS26.esc(r.lane)})</span></div>
+        </td>
+        <td>${JS26.pill(r.stage)}</td>
+        <td class="num" title="Tage seit letztem Signal">
+          ${JS26.healthDot(h)} <span style="color:var(--${h.k==='stale'?'bad':h.k==='cooling'?'warn':'ok'})">${h.l}</span>
+        </td>
+        <td class="num">${JS26.scoreBadge(r.score, r.stage)}</td>
+        <td style="white-space:nowrap">
+          <div style="display:flex;gap:5px;align-items:center">
+            <a href="03_briefings.html#${slug}" class="chip" style="padding:2px 7px;font-size:10.5px" onclick="event.stopPropagation()">Briefing ↗</a>
+            ${cockChip(r)}
+          </div>
+        </td>
+      </tr>`;
+  }).join("") + `<tr class="fill" aria-hidden="true"><td colspan="5" style="height:100%;padding:0;border:0;background:transparent"></td></tr></tbody></table></div>`;
+
+/* ---- Cold processes (>21 days idle) ---- */
+const cold = open.filter(r => r._idle != null && r._idle > 21).sort((a, b) => b._idle - a._idle).slice(0, 16);
+document.getElementById("n-cold").textContent = open.filter(r => r._idle > 21).length;
+document.getElementById("cold").innerHTML = `
+  <div class="scroll" style="max-height:min(44vh,460px)">
+    <table>
+      <thead>
+        <tr>
+          <th>Unternehmen & Rolle</th>
+          <th>Stufe</th>
+          <th style="text-align:right">Inaktiv</th>
+          <th>Ordner</th>
+        </tr>
+      </thead>
+      <tbody>` +
+  cold.map(r => {
+    const h = JS26.health(r);
+    return `
+      <tr onclick="JS26.openDrawer(${JSON.stringify(r).replace(/"/g, '&quot;')}, this)">
+        <td>
+          <div class="co">${JS26.esc(r.company)}</div>
+          <div class="role">${JS26.esc(r.role)}</div>
+        </td>
+        <td>${JS26.pill(r.stage)}</td>
+        <td class="num" style="color:var(--${r._idle > 45 ? 'bad' : 'warn'});font-weight:600">
+          ${JS26.healthDot(h)} ${r._idle}d
+        </td>
+        <td>${JS26.folder(r)}</td>
+      </tr>`;
+  }).join("") + `</tbody></table></div>`;
+
+/* ---- Drive Hygiene ---- */
+const H = D.hygiene || {};
+const block = (t, items, tone, help) => {
+  const n = (items || []).length;
+  const isGood = n === 0;
+  const badgeCls = isGood ? "ok" : tone;
+  return `
+    <details ${n && tone === "bad" ? "open" : ""} style="border-bottom:1px solid var(--line-2);padding:4px 0">
+      <summary style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <div>
+          <span class="pill" style="font-size:10px;padding:1px 7px;background:var(--${badgeCls}-tint);color:var(--${badgeCls})">
+            ${isGood ? "✓ 0" : "! " + n}
+          </span>
+          <b style="color:var(--ink);margin-left:6px">${t}</b>
+          <span style="color:var(--muted);font-weight:400;font-size:11.5px">— ${help}</span>
+        </div>
+        <span style="color:var(--muted);font-size:11px">${n} Einträge</span>
+      </summary>
+      <div style="padding:8px 0 12px 28px;color:var(--ink-2);font-size:11.5px;columns:2;column-gap:28px">
+        ${n ? items.map(x => `<div style="break-inside:avoid;padding:2px 0">${JS26.esc(x)}</div>`).join("") : '<div style="color:var(--ok);font-weight:550">✓ Alles sauber</div>'}
+      </div>
+    </details>`;
+};
+
+document.getElementById("n-hyg").textContent = (H.n_folders || 0) + " Drive-Ordner";
+document.getElementById("hygiene").innerHTML =
+  block("Doppelte Ordnernummern", H.dupes, "bad", "Zwei Ordner mit identischer UID — zusammenführen")
+ +block("Zeilen ohne Drive-Ordner", H.no_folder, "warn", "Bewerbung erfasst, aber kein Nachweis-Ordner verknüpft")
+ +block("Ordner ohne Zeile (Orphans)", H.orphan, "warn", "Drive-Ordner existiert ohne zugehörige Zeile in pipeline.csv")
+ +block("Offen und über 45 Tage still", H.stale, "warn", "Entweder aktiv nachfassen oder auf Closed/lapsed setzen")
+ +block("Offen ohne Bewerbungsdatum", H.no_date, "warn", "Datum nachtragen für vollständige Kennzahlen");
+
+/* ---- Funnel with SVG Fallback ---- */
+const funnelStages = JS26.OPEN;
+const funnelCounts = funnelStages.map(st);
+const funnelColors = [
+  JS26.css("--w-watchlist"), JS26.css("--w-applied"), JS26.css("--w-screening"),
+  JS26.css("--w-interviewing"), JS26.css("--w-final")
+];
+
+JS26.chart(() => new Chart(document.getElementById("funnel"), {
+  type: "bar",
+  data: {
+    labels: funnelStages,
+    datasets: [{
+      data: funnelCounts,
+      backgroundColor: funnelColors,
+      borderRadius: 5,
+      maxBarThickness: 36
+    }]
+  },
+  options: {
+    indexAxis: "y",
+    plugins: { legend: { display: false } },
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        beginAtZero: true,
+        grid: { color: JS26.css("--line-2") },
+        ticks: { color: JS26.css("--muted"), precision: 0 }
+      },
+      y: {
+        grid: { display: false },
+        ticks: { color: JS26.css("--ink-2"), font: { size: 11.5, weight: 600 } }
+      }
+    }
+  }
+}), "funnel", () => JS26.renderSvgFunnel(funnelStages, funnelCounts, funnelColors));
+</script>{% endblock %}

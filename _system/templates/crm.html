@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+{% block head %}<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>{% endblock %}
+{% block body %}
+<div class="kpis" id="kpis"></div>
+<div class="grid g3" style="margin-bottom:16px">
+  <div class="card">
+    <h2>Stufenverteilung <span class="count" id="c1"></span></h2>
+    <div class="body"><div class="chart-container" style="height:220px"><canvas id="ch-stage"></canvas></div></div>
+  </div>
+  <div class="card">
+    <h2>Bewerbungen nach Lane <span class="count" id="c2"></span></h2>
+    <div class="body"><div class="chart-container" style="height:220px"><canvas id="ch-lane"></canvas></div></div>
+  </div>
+  <div class="card">
+    <h2>Bewerbungsvolumen pro Monat <span class="count" id="c3"></span></h2>
+    <div class="body"><div class="chart-container" style="height:220px"><canvas id="ch-month"></canvas></div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Pipeline CRM <span class="count" id="n-rows"></span></h2>
+  <div class="tools">
+    <div class="presets">
+      <button class="btn-preset active" data-preset="all">Alle</button>
+      <button class="btn-preset" data-preset="open">Nur Offene</button>
+      <button class="btn-preset" data-preset="prio">Top Prio (≥50)</button>
+      <button class="btn-preset" data-preset="live">In Gesprächen</button>
+      <button class="btn-preset" data-preset="action">Action Due</button>
+    </div>
+    <div style="flex:1;min-width:180px;display:flex;align-items:center;position:relative">
+      <input type="search" id="q" placeholder="Suche nach Firma, Rolle, Kontakt, Notiz, UID …">
+    </div>
+    <select id="f-lane"><option value="">Alle Lanes</option></select>
+    <select id="f-sal">
+      <option value="">Gehalt: alle</option>
+      <option value="above">über Ziel</option>
+      <option value="around">um Ziel</option>
+      <option value="below">unter Ziel</option>
+    </select>
+    <span id="f-stage" style="display:flex;gap:5px;flex-wrap:wrap"></span>
+    <button class="chip" id="reset" title="Filter zurücksetzen">Zurücksetzen</button>
+  </div>
+  <div class="scroll">
+    <table id="tbl">
+      <thead>
+        <tr>
+          <th data-k="uid" data-dir="asc">UID <i class="ar"></i></th>
+          <th data-k="company" data-dir="asc">Unternehmen <i class="ar"></i></th>
+          <th data-k="role" data-dir="asc">Rolle <i class="ar"></i></th>
+          <th data-k="lane" data-dir="asc">Lane <i class="ar"></i></th>
+          <th data-k="stage" data-dir="asc">Stufe <i class="ar"></i></th>
+          <th data-k="applied" data-dir="asc">Beworben <i class="ar"></i></th>
+          <th data-k="_idle" style="text-align:right">Signal <i class="ar"></i></th>
+          <th data-k="score" style="text-align:right">Score <i class="ar">▼</i></th>
+          <th data-k="salary_fit" data-dir="asc">Gehalt <i class="ar"></i></th>
+          <th>Ordner</th>
+          <th data-k="note" data-dir="asc">Letzter Verlauf <i class="ar"></i></th>
+        </tr>
+      </thead>
+      <tbody id="tb"></tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}<script>
+const D = JS26.load(), R = D.rows;
+const S = JS26.store("js26_crm_v2");
+let F = Object.assign({ q: "", lane: "", sal: "", stages: [], preset: "all" }, S.get());
+let cmp = (a, b) => b.score - a.score;
+
+const open = R.filter(r => r.stage !== "Closed");
+const liveStages = ["Screening", "Interviewing", "Final"];
+const liveCount = open.filter(r => liveStages.includes(r.stage)).length;
+
+// URL parameters override or reset sticky storage
+try {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has("reset")) {
+    F = { q: "", lane: "", sal: "", stages: [], preset: "all" };
+  } else {
+    if (urlParams.has("q")) F.q = urlParams.get("q");
+    if (urlParams.has("lane")) F.lane = urlParams.get("lane");
+    if (urlParams.has("sal")) F.sal = urlParams.get("sal");
+    if (urlParams.has("preset")) {
+      const p = urlParams.get("preset");
+      F.preset = p;
+      if (p === "all") F.stages = [];
+      else if (p === "open") F.stages = JS26.OPEN.slice();
+      else if (p === "prio") F.stages = [];
+      else if (p === "live") F.stages = liveStages.slice();
+      else if (p === "action") F.stages = [];
+      else if (p === "final") { F.stages = ["Final"]; F.preset = "custom"; }
+      else if (p === "interviewing") { F.stages = ["Interviewing"]; F.preset = "custom"; }
+      else if (p === "screening") { F.stages = ["Screening"]; F.preset = "custom"; }
+      else if (p === "applied") { F.stages = ["Applied"]; F.preset = "custom"; }
+    }
+    if (urlParams.has("stage")) {
+      F.stages = [urlParams.get("stage")];
+      F.preset = "custom";
+    }
+  }
+} catch (e) {}
+
+const kpi = (l, v, h, c, filter) => `
+  <div class="kpi" data-filter="${filter}">
+    <div class="l">${l}</div>
+    <div class="v ${c || ""}">${v}</div>
+    <div class="h">${h}</div>
+  </div>`;
+
+document.getElementById("kpis").innerHTML =
+  kpi("Bewerbungen", R.length, "Gesamterfassungen", "brand", "all")
+ +kpi("Offene Verfahren", open.length, "aktiv im Prozess", "ok", "open")
+ +kpi("In Gesprächen", liveCount, "Screening bis Final", liveCount ? "ok" : "idle", "live")
+ +kpi("Interview-Quote", D.interviews_reached, `${D.interview_rate}% Quote`, "brand", "live")
+ +kpi("Über Zielgehalt", open.filter(r => r.salary_fit === "above").length, "oberhalb deines Zielbands", "ok", "above")
+ +kpi("Geschlossen", R.length - open.length, `${Math.round((R.length - open.length)/R.length*100)}% Close-Rate`, "idle", "closed")
+ +kpi("Angebote / Signed", D.offers, "bisher", D.offers ? "ok" : "idle", "signed");
+
+/* KPI quick click listeners */
+document.querySelectorAll(".kpi[data-filter]").forEach(el => {
+  el.addEventListener("click", () => {
+    const f = el.dataset.filter;
+    if (f === "all") { F = { q: "", lane: "", sal: "", stages: [], preset: "all" }; }
+    else if (f === "open") { F.stages = JS26.OPEN.slice(); F.preset = "open"; }
+    else if (f === "live") { F.stages = liveStages.slice(); F.preset = "live"; }
+    else if (f === "above") { F.sal = "above"; F.preset = "custom"; }
+    else if (f === "closed") { F.stages = ["Closed"]; F.preset = "custom"; }
+    else if (f === "signed") { F.q = "signed"; F.preset = "custom"; }
+    syncUI();
+    render();
+  });
+});
+
+/* Stage filter chips with live counts */
+function updateStageChips() {
+  const counts = {};
+  R.forEach(r => { counts[r.stage] = (counts[r.stage] || 0) + 1; });
+  document.getElementById("f-stage").innerHTML = JS26.STAGES.map(s => {
+    const n = counts[s] || 0;
+    const on = F.stages.includes(s) ? "on" : "";
+    return `<button class="chip st ${on}" data-s="${s}">
+      ${s} <span class="badge">${n}</span>
+    </button>`;
+  }).join("");
+}
+
+/* Lane filter options */
+const laneCounts = {};
+R.forEach(r => { if (r.lane) laneCounts[r.lane] = (laneCounts[r.lane] || 0) + 1; });
+const lanes = Object.keys(laneCounts).sort();
+document.getElementById("f-lane").innerHTML = `<option value="">Alle Lanes</option>` +
+  lanes.map(l => `<option value="${JS26.esc(l)}">${JS26.esc(l)} (${laneCounts[l]})</option>`).join("");
+
+function match(r) {
+  if (F.preset === "open" && r.stage === "Closed") return false;
+  if (F.preset === "prio" && (r.score < 50 || r.stage === "Closed")) return false;
+  if (F.preset === "live" && !liveStages.includes(r.stage)) return false;
+  if (F.preset === "action" && (!r.next_action || r.stage === "Closed")) return false;
+
+  if (F.stages.length && !F.stages.includes(r.stage)) return false;
+  if (F.lane && r.lane !== F.lane) return false;
+  if (F.sal && r.salary_fit !== F.sal) return false;
+  if (F.q) {
+    const q = JS26.norm(F.q);
+    if (!r._norm.includes(q)) return false;
+  }
+  return true;
+}
+
+function render() {
+  const rows = R.filter(match).sort(cmp);
+  document.getElementById("n-rows").textContent = `${rows.length} von ${R.length} Datensätzen`;
+  const tb = document.getElementById("tb");
+
+  if (!rows.length) {
+    tb.innerHTML = `<tr><td colspan="11" style="text-align:center;padding:36px;color:var(--muted)">Keine Bewerbungen für die aktuellen Filterkriterien gefunden. <button class="chip" onclick="document.getElementById('reset').click()" style="margin-left:8px;cursor:pointer">Filter zurücksetzen</button></td></tr>`;
+    return;
+  }
+
+  tb.innerHTML = rows.map(r => {
+    const h = JS26.health(r);
+    const sal = {
+      above: '<span style="color:var(--ok);font-weight:650">über ✓</span>',
+      around: '<span style="color:var(--warn)">um ~</span>',
+      below: '<span style="color:var(--bad)">unter ✗</span>'
+    }[r.salary_fit] || '<span style="color:var(--muted)">—</span>';
+
+    return `
+      <tr onclick="JS26.openDrawer(${JSON.stringify(r).replace(/"/g, '&quot;')}, this)">
+        <td class="num" style="color:var(--muted)">${JS26.esc(r.uid || "—")}</td>
+        <td style="background:${JS26.heat(r.score)}">
+          <span class="co">${JS26.esc(r.company)}</span>
+        </td>
+        <td class="role">${JS26.esc(r.role)}</td>
+        <td style="color:var(--muted);font-size:11px">${JS26.esc(r.lane)}</td>
+        <td>
+          ${JS26.pill(r.stage)}
+          ${r.outcome ? `<div style="font-size:10px;color:var(--muted);margin-top:2px;font-weight:550">${JS26.esc(r.outcome)}</div>` : ""}
+        </td>
+        <td class="num">${JS26.de(r.applied)}</td>
+        <td class="num" style="color:var(--${h.k==='stale'?'bad':h.k==='cooling'?'warn':h.k==='closed'?'muted':'ok'})">
+          ${JS26.healthDot(h)} ${h.l}
+        </td>
+        <td class="num">${JS26.scoreBadge(r.score, r.stage)}</td>
+        <td style="font-size:11px">${sal}</td>
+        <td>${JS26.folder(r)}</td>
+        <td><div class="note">${JS26.esc(r.note)}</div></td>
+      </tr>`;
+  }).join("");
+
+  S.set(F);
+}
+
+function syncUI() {
+  document.getElementById("q").value = F.q;
+  document.getElementById("f-lane").value = F.lane;
+  document.getElementById("f-sal").value = F.sal;
+  updateStageChips();
+
+  document.querySelectorAll(".btn-preset").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.preset === F.preset);
+  });
+}
+
+/* Event Listeners */
+let searchDebounce;
+document.getElementById("q").addEventListener("input", e => {
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(() => {
+    F.q = e.target.value;
+    render();
+  }, 120);
+});
+
+document.getElementById("f-lane").addEventListener("change", e => {
+  F.lane = e.target.value;
+  render();
+});
+
+document.getElementById("f-sal").addEventListener("change", e => {
+  F.sal = e.target.value;
+  render();
+});
+
+document.getElementById("f-stage").addEventListener("click", e => {
+  const chip = e.target.closest(".chip.st");
+  if (!chip) return;
+  const s = chip.dataset.s;
+  const idx = F.stages.indexOf(s);
+  if (idx < 0) F.stages.push(s);
+  else F.stages.splice(idx, 1);
+  F.preset = "custom";
+  syncUI();
+  render();
+});
+
+document.querySelectorAll(".btn-preset").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const p = btn.dataset.preset;
+    F.preset = p;
+    if (p === "all") { F.stages = []; }
+    else if (p === "open") { F.stages = JS26.OPEN.slice(); }
+    else if (p === "prio") { F.stages = []; }
+    else if (p === "live") { F.stages = liveStages.slice(); }
+    else if (p === "action") { F.stages = []; }
+    syncUI();
+    render();
+  });
+});
+
+document.getElementById("reset").addEventListener("click", () => {
+  F = { q: "", lane: "", sal: "", stages: [], preset: "all" };
+  syncUI();
+  render();
+});
+
+JS26.sortable(document.getElementById("tbl"), c => {
+  cmp = c;
+  render();
+});
+
+syncUI();
+render();
+
+/* ---- Charts ---- */
+const cnt = (k, src) => {
+  const m = {};
+  src.forEach(r => { m[r[k]] = (m[r[k]] || 0) + 1; });
+  return m;
+};
+
+const sm = cnt("stage", R);
+document.getElementById("c1").textContent = Object.keys(sm).length + " Stufen";
+JS26.chart(() => JS26.donut(
+  document.getElementById("ch-stage"),
+  JS26.STAGES.filter(s => sm[s]),
+  JS26.STAGES.filter(s => sm[s]).map(s => sm[s]),
+  JS26.STAGES.filter(s => sm[s]).map(s => JS26.css("--w-" + s.toLowerCase()))
+), "ch-stage");
+
+const lm = cnt("lane", R), lk = Object.keys(lm).sort((a, b) => lm[b] - lm[a]);
+document.getElementById("c2").textContent = lk.length + " Lanes";
+JS26.chart(() => JS26.bars(
+  document.getElementById("ch-lane"),
+  lk,
+  lk.map(k => lm[k]),
+  JS26.css("--brand-2"),
+  true
+), "ch-lane");
+
+const mm = {};
+R.forEach(r => {
+  if (r.applied) {
+    const m = r.applied.slice(0, 7);
+    mm[m] = (mm[m] || 0) + 1;
+  }
+});
+const mk = Object.keys(mm).sort();
+document.getElementById("c3").textContent = mk.length + " Monate";
+JS26.chart(() => JS26.bars(
+  document.getElementById("ch-month"),
+  mk,
+  mk.map(k => mm[k]),
+  JS26.css("--brand"),
+  false
+), "ch-month");
+</script>{% endblock %}

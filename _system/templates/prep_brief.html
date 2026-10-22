@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+.brief-wrap { max-width: 860px; margin: 0 auto; }
+.pb-hdr { background: var(--brand-grad); color: #fff; padding: 20px 24px; border-radius: var(--radius); margin-bottom: 14px; }
+.pb-hdr h1 { margin: 0; font-size: 22px; font-weight: 750; color: #fff; }
+.pb-hdr .sub { font-size: 15px; opacity: .9; margin-top: 2px; }
+.pb-hdr .meta { font-size: 11.5px; opacity: .7; margin-top: 8px; }
+.pb-sec { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 22px; margin-bottom: 14px; }
+.pb-sec h2 { margin: 0 0 12px; font-size: 14px; font-weight: 700; color: var(--brand); border-bottom: 2px solid var(--brand-tint); padding-bottom: 6px; }
+.pb-sec h3 { margin: 14px 0 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.pb-sec p, .pb-sec li { font-size: 13px; line-height: 1.6; color: var(--ink); margin: 0 0 4px; }
+.pb-sec ul { margin: 0; padding-left: 18px; }
+.hook { background: var(--brand-tint); border-left: 3px solid var(--brand); padding: 12px 16px; border-radius: 0 var(--radius) var(--radius) 0; margin: 8px 0; font-size: 13px; font-style: italic; line-height: 1.6; }
+.bf-row { display: grid; grid-template-columns: 160px 1fr; gap: 8px; align-items: start; padding: 7px 0; border-bottom: 1px solid var(--line-2); font-size: 12.5px; }
+.bf-row .k { color: var(--muted); font-weight: 600; }
+.gap { display: inline-block; background: var(--bad-tint); color: var(--bad); border: 1px solid color-mix(in srgb, var(--bad) 30%, transparent); padding: 1px 7px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.guard { padding: 5px 0; font-size: 12.5px; border-bottom: 1px solid var(--line-2); display: flex; gap: 8px; }
+.q-row { display: grid; grid-template-columns: 28px 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line-2); }
+.q-rank { width: 24px; height: 24px; border-radius: 50%; background: var(--brand); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.q-text { font-size: 13.5px; font-weight: 600; line-height: 1.5; }
+.q-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.guard::before { content: "⚡"; flex-shrink: 0; }
+@media print {
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .pb-sec { break-inside: avoid; }
+}
+</style>
+{% endblock %}
+{% block body %}
+<div class="brief-wrap">
+
+  <div class="pb-hdr">
+    <div style="font-size:10px;opacity:.7;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Prep Brief · {{ lang|upper }}</div>
+    <h1>{{ company }}</h1>
+    <div class="sub">{{ role }}</div>
+    <div class="meta">{{ today }} · UID {{ uid }}{% if next_action %} · Next: {{ next_action }}{% endif %}</div>
+  </div>
+
+  <!-- 1. Company snapshot -->
+  <div class="pb-sec">
+    <h2>1 · {{ "Firma in 30 Sekunden" if lang == "de" else "Company in 30 Seconds" }}</h2>
+    <p>{{ company_snapshot }}</p>
+    {% if strategic_context %}<p style="margin-top:8px;color:var(--muted)">{{ strategic_context }}</p>{% endif %}
+  </div>
+
+  <!-- 2. Panel briefing -->
+  <div class="pb-sec">
+    <h2>2 · {{ "Panel-Briefing" if lang == "de" else "Panel Briefing" }}</h2>
+    {% if contacts_detail %}
+      {% for c in contacts_detail %}
+      <h3>{{ c.name }}{% if c.title %} — {{ c.title }}{% endif %}</h3>
+      <p>{{ c.background }}</p>
+      {% if c.language_note %}<p style="color:var(--muted)"><b>{{ "Sprache/Stil:" if lang == "de" else "Style:" }}</b> {{ c.language_note }}</p>{% endif %}
+      {% if c.open_question %}<p><b>{{ "Vorbereitete Frage:" if lang == "de" else "Prepared question:" }}</b> <em>{{ c.open_question }}</em></p>{% endif %}
+      {% endfor %}
+    {% else %}
+      <p style="color:var(--muted)">{{ "Keine benannten Gesprächspartner identifiziert — nach Einladung ergänzen." if lang == "de" else "No named contacts identified — complete after invitation." }}</p>
+    {% endif %}
+  </div>
+
+  <!-- 3. KEYFACTS -->
+  <div class="pb-sec">
+    <h2>3 · KEYFACTS §D</h2>
+    {% for f in keyfacts_fields %}
+    <div class="bf-row">
+      <div class="k">{{ f.label }}</div>
+      <div>{% if f.value %}{{ f.value }}{% else %}<span class="gap">PREP GAP</span>{% endif %}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- 4. Hooks -->
+  <div class="pb-sec">
+    <h2>4 · Open Hook &amp; Close Hook</h2>
+    <h3>Open Hook</h3>
+    <div class="hook">{{ open_hook or ("— noch nicht ausformuliert." if lang == "de" else "— not yet drafted.") }}</div>
+    <h3>Close Hook</h3>
+    <div class="hook">{{ close_hook or ("— noch nicht ausformuliert." if lang == "de" else "— not yet drafted.") }}</div>
+  </div>
+
+  <!-- 5. Guardrails -->
+  <div class="pb-sec">
+    <h2>5 · {{ "Leitplanken" if lang == "de" else "Guardrails" }}</h2>
+    {% for g in guardrails %}<div class="guard">{{ g }}</div>{% endfor %}
+  </div>
+
+  <!-- 6. Meine Fragen (ranked) -->
+  <div class="pb-sec" id="meine-fragen">
+    <h2>6 · {{ "Meine Fragen an das Panel (nach Priorität)" if lang == "de" else "My questions for the panel (ranked)" }}</h2>
+    {% if questions %}
+    {% for q in questions %}
+    <div class="q-row">
+      <div class="q-rank">{{ loop.index }}</div>
+      <div>
+        <div class="q-text">{{ q.question }}</div>
+        {% if q.to %}<div class="q-meta"><b>{{ "An:" if lang == "de" else "To:" }}</b> {{ q.to }}</div>{% endif %}
+        {% if q.why %}<div class="q-meta"><b>{{ "Warum:" if lang == "de" else "Why:" }}</b> {{ q.why }}</div>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p><span class="gap">PREP GAP</span> {{ "Noch keine Fragen an das Panel vorbereitet." if lang == "de" else "No panel questions prepared yet." }}</p>
+    {% endif %}
+  </div>
+
+  {% if open_items %}
+  <div class="pb-sec">
+    <h2>7 · {{ "Offen / nicht verifiziert" if lang == "de" else "Open / unverified" }}</h2>
+    <ul>{% for o in open_items %}<li>{{ o }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+{% block script %}<script>/* print-only */</script>{% endblock %}

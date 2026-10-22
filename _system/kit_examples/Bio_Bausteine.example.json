@@ -1,0 +1,8 @@
+{
+  "hinweis": "Verifizierte Bausteine für die Bio je Rolle. Nur diese Fakten verwenden; Titel und Zahlen genau so. Jeder Eintrag muss aus deinem CV oder einem Zeugnis belegbar sein.",
+  "fakten": [
+    {"id": "titel", "text": "Dein aktueller oder letzter Titel, Arbeitgeber, Zeitraum, Berichtslinie.", "beleg": "CV, Zeugnis"}
+  ],
+  "regeln": ["Zahlen nur mit Beleg.", "Keine Erfahrung behaupten, die du nicht hast."],
+  "nicht_sagen_woerter": []
+}

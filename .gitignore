@@ -1,0 +1,25 @@
+# Alles Persönliche bleibt lokal. Dieses Repository enthält nur Code und erfundene Beispiele.
+# Prüfe vor jedem Commit: git status zeigt nur Code? Dann ist alles gut.
+.env
+.env.*
+config/
+logs/
+00 references/
+[0-9]* */
+_Archiv/
+*.csv
+!_system/kit_examples/*.csv
+*.html
+!_system/templates/*.html
+!setup/wizard.html
+_system/*.json
+!_system/kit_examples/*.json
+!_system/i18n_en.json
+_system/logs/
+_system/archive/
+.star_demo*
+*.pdf
+*.docx
+__pycache__/
+.pytest_cache/
+.DS_Store

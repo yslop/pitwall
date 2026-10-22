@@ -1,0 +1,4 @@
+# Only for tests and the optional job discovery. Setup, cockpit and preparation run on the standard library.
+pytest>=8
+requests>=2.31
+requests-mock>=1.12

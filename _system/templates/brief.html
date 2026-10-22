@@ -1,0 +1,524 @@
+{% extends "base.html" %}
+{% block body %}
+<!-- Top Executive Management Summary for Next Steps -->
+<div id="mgmt-summary-root"></div>
+
+<!-- Quick Navigation & Filter Ribbon -->
+<div class="card" style="margin-bottom:18px">
+  <div class="tools">
+    <div style="font-weight:700;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em">
+      Schnellzugriff
+    </div>
+    <input type="search" id="q" placeholder="Live-Verfahren filtern …" style="max-width:280px">
+    <div id="jump" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"></div>
+  </div>
+</div>
+
+<div class="tabbar modebar" id="modes" role="tablist" aria-label="Ansicht">
+  <button type="button" class="tab on" role="tab" aria-selected="true" data-mode="read">Lesezone</button>
+  <button type="button" class="tab" role="tab" aria-selected="false" data-mode="dossier">Dossiers</button>
+</div>
+
+<!-- Reading pane: click a position, read its current cheat sheet or briefing (per stage) -->
+<div id="reader-root" class="reader">
+  <nav class="reader-list" id="reader-list" aria-label="Positionen mit Dokumenten"></nav>
+  <section class="reader-pane" id="reader-pane" aria-live="polite"></section>
+</div>
+
+<!-- Detailed Opportunity Dossiers -->
+<div id="briefs" hidden></div>
+{% endblock %}
+
+{% block script %}<script>
+const D = JS26.load();
+const live = D.rows.filter(r => ["Screening", "Interviewing", "Final"].includes(r.stage))
+                 .sort((a, b) => b.score - a.score);
+const slug = r => ("b" + r.uid + "-" + r.role).toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40);
+const P = D.prep || {};
+const I = (D.intel && D.intel.uids) || {};
+
+/* Helper: derive priority level and badge */
+function getPrio(r, p) {
+  if (r.due) {
+    const d = JS26.days(r.due);
+    if (d >= 0) return { lvl: "urgent", label: "🚨 Fällig" };
+    if (d >= -7) return { lvl: "high", label: "⚡ Diese Woche" };
+  }
+  return { lvl: "normal", label: "📅 Geplant" };
+}
+
+/* ==============================================================================
+   1. Render Global Executive Management Summary at the Top
+   ============================================================================== */
+function renderManagementSummary() {
+  const root = document.getElementById("mgmt-summary-root");
+  if (!root) return;
+  if (!live.length) {
+    root.innerHTML = `<div class="card body" style="text-align:center;padding:24px;color:var(--muted);margin-bottom:18px">Keine aktiven Verfahren in Gesprächs- oder Interviewphasen.</div>`;
+    return;
+  }
+
+  // Calculate high-level management metrics
+  const urgentCount = live.filter(r => {
+    if (r.due) {
+      const d = JS26.days(r.due);
+      return d != null && d >= -7;
+    }
+    return false;
+  }).length;
+
+  const targetCompCount = live.filter(r => ["above", "around"].includes(r.salary_fit)).length;
+  const maxScore = Math.max(...live.map(r => r.score || 0));
+
+  const tableRows = live.map(r => {
+    const p = P[r.uid] || {};
+    const prio = getPrio(r, p);
+    const sId = slug(r);
+    
+    // Resolve primary next step
+    let nextStepText = r.next_action || "";
+    let nextStepDue = r.due ? JS26.de(r.due) : "";
+    let nextStepOwner = r.contacts || "Kandidat";
+
+    if (p.next_steps && p.next_steps.length > 0) {
+      const primary = p.next_steps[0];
+      nextStepText = primary.action || nextStepText;
+      nextStepDue = primary.due ? JS26.de(primary.due) : nextStepDue;
+      nextStepOwner = primary.owner || nextStepOwner;
+    }
+    if (!nextStepText) {
+      nextStepText = `Gesprächs- und Interviewvorbereitung für ${r.role}`;
+    }
+
+    const d = r.due ? JS26.days(r.due) : null;
+    const dueClass = d == null ? "" : d > 0 ? "badge-prio urgent" : d === 0 ? "badge-prio high" : "badge-prio normal";
+    const dueLabel = r.due ? (d > 0 ? `+${d}d über` : d === 0 ? "HEUTE" : JS26.de(r.due)) : (nextStepDue || "laufend");
+
+    return `
+      <tr>
+        <td style="width:110px">
+          <span class="badge-prio ${prio.lvl}">${prio.label}</span>
+        </td>
+        <td>
+          <div style="font-weight:750;font-size:13.5px;color:var(--ink)">
+            <a href="#${sId}" style="color:inherit">${JS26.esc(r.company)}</a>
+          </div>
+          <div style="color:var(--ink-2);font-size:12px;margin-top:2px">
+            ${JS26.esc(r.role)}
+            <span style="color:var(--muted);font-size:11px">(${JS26.esc(r.lane)})</span>
+          </div>
+        </td>
+        <td style="width:120px">
+          ${JS26.pill(r.stage)}
+        </td>
+        <td style="min-width:280px">
+          <div style="font-weight:650;color:var(--ink);line-height:1.45">${JS26.esc(nextStepText)}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">
+            Ansprechpartner: <b>${JS26.esc(nextStepOwner)}</b>
+          </div>
+        </td>
+        <td style="width:80px;text-align:right">
+          ${r.confidence === "" || r.confidence == null ? "" : `<span class="chip" style="font-size:12px;font-weight:700" title="${JS26.esc(r.confidence_why || "")}">${r.confidence} %</span>`}
+        </td>
+        <td style="width:110px;text-align:right">
+          <span class="${dueClass || 'chip'}" style="font-size:10.5px">${dueLabel}</span>
+        </td>
+        <td style="width:130px;text-align:right;white-space:nowrap">
+          <div style="display:flex;gap:6px;justify-content:flex-end;align-items:center">
+            <a href="#${sId}" class="chip on" style="font-size:11px;padding:3px 9px">Dossier ↓</a>
+            ${JS26.folder(r)}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  const guidanceCards = live.slice(0, 4).map((r, i) => {
+    const step = ((P[r.uid] || {}).next_steps || [])[0];
+    const text = (step && step.action) || r.next_action || `Gesprächs- und Interviewvorbereitung für ${r.role}`;
+    return `<div class="mgmt-guidance-card"><b>${["🎯", "⚡", "💬", "🔍"][i]} Prio ${i + 1} — ${JS26.esc(r.company)}</b><p>${JS26.esc(text)}</p></div>`;
+  }).join("");
+
+  root.innerHTML = `
+    <div class="mgmt-summary-card">
+      <div class="mgmt-header">
+        <div class="mgmt-header-left">
+          <div class="mgmt-badge-lead">
+            <span>⚡ EXECUTIVE BRIEFING</span>
+            <span>·</span>
+            <span>STRATEGISCHE ENTSCHEIDUNGSVORLAGE</span>
+          </div>
+          <h2 class="mgmt-title">📋 Management Summary: Nächste Schritte &amp; Pipeline-Prioritäten</h2>
+          <div class="mgmt-subtitle">
+            Stand <b>${JS26.de(D.generated)}</b> · Synthese aller <b>${live.length}</b> aktiven Verfahren in Gesprächsphasen · Fokus auf Meilensteine, Stakeholder-Führung und Zielkompensation.
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="chip on" style="font-size:11.5px;padding:4px 12px">⚡ ${urgentCount} zeitkritische Meilensteine</span>
+        </div>
+      </div>
+
+      <!-- Executive KPI Strip -->
+      <div class="mgmt-kpi-strip">
+        <div class="mgmt-kpi-item">
+          <div class="mgmt-kpi-label">In Gesprächen</div>
+          <div class="mgmt-kpi-val brand">${live.length}</div>
+        </div>
+        <div class="mgmt-kpi-item">
+          <div class="mgmt-kpi-label">Dringend / Fällig (≤7d)</div>
+          <div class="mgmt-kpi-val ${urgentCount ? 'warn' : 'ok'}">${urgentCount}</div>
+        </div>
+        <div class="mgmt-kpi-item">
+          <div class="mgmt-kpi-label">Zielgehalt</div>
+          <div class="mgmt-kpi-val ok">${targetCompCount}</div>
+        </div>
+        <div class="mgmt-kpi-item">
+          <div class="mgmt-kpi-label">Top Match Score</div>
+          <div class="mgmt-kpi-val brand">${maxScore}</div>
+        </div>
+      </div>
+
+      <!-- Next Steps Priority Matrix Table -->
+      <div class="mgmt-table-wrap">
+        <table class="mgmt-table">
+          <thead>
+            <tr>
+              <th>Priorität</th>
+              <th>Unternehmen &amp; Mandat</th>
+              <th>Stufe</th>
+              <th>Nächster konkreter Meilenstein</th>
+              <th style="text-align:right" title="Einschätzung des Beobachters (Claude) aus Gesprächsinhalt und Signalen; ohne Einschätzung Heuristik aus Stufe, Gesprächen, Match, Gehalt und Funkstille. Keine Prognose.">Chance</th>
+              <th style="text-align:right">Fälligkeit</th>
+              <th style="text-align:right">Aktion</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tableRows}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Strategic Directives & Management Focus -->
+      <div class="mgmt-guidance-grid">
+        ${guidanceCards}
+      </div>
+    </div>
+  `;
+}
+
+renderManagementSummary();
+
+/* ==============================================================================
+   2. Render Quick Access Jump Chips
+   ============================================================================== */
+document.getElementById("jump").innerHTML = live.map(r => `
+  <a class="chip" href="#${slug(r)}">
+    ${JS26.pill(r.stage)}
+    <b>${JS26.esc(r.company)}</b>
+    <span class="badge">${r.score}</span>
+  </a>
+`).join("");
+
+/* ==============================================================================
+   3. Render Detailed Dossier Cards with Per-Process Management Summary
+   ============================================================================== */
+document.getElementById("briefs").innerHTML = live.map(r => {
+  const h = JS26.health(r);
+  const p = P[r.uid] || {};
+  const prio = getPrio(r, p);
+
+  const assets = (p.assets || []).map(a => `
+    <li style="margin-bottom:5px">
+      ${a.url ? `<a href="${JS26.esc(a.url)}" target="_blank" rel="noopener" style="font-weight:650">${JS26.esc(a.name)} ↗</a>` : `<b>${JS26.esc(a.name)}</b>`}
+      ${a.where ? `<span style="color:var(--muted);font-size:11.5px"> · ${JS26.esc(a.where)}</span>` : ""}
+    </li>`).join("");
+
+  const hooks = (p.hooks || []).map(x => `<li>${JS26.esc(x)}</li>`).join("");
+  const risks = (p.risks || []).map(x => `<li>${JS26.esc(x)}</li>`).join("");
+
+  const sal = {
+    above: '<span style="color:var(--ok);font-weight:650">über Zielband ✓</span>',
+    around: '<span style="color:var(--warn);font-weight:650">um Zielband ~</span>',
+    below: '<span style="color:var(--bad);font-weight:650">unter Zielband ✗</span>'
+  }[r.salary_fit] || '<span style="color:var(--muted)">nicht verhandelt / unbestimmt</span>';
+
+  // Per-Opportunity Management Summary & Next Steps Roadmap
+  const mgmtSummaryText = p.management_summary || (
+    r.next_action
+      ? `Aktives Verfahren in Stufe ${r.stage}. Nächster Meilenstein: ${r.next_action}. Gehaltseinstufung: ${r.salary_fit || 'unbestimmt'}.`
+      : `Verfahren in Stufe ${r.stage} mit Score ${r.score}. Regelmäßige Abstimmung und Vorbereitung der nächsten Runde erforderlich.`
+  );
+
+  let nextStepsItems = "";
+  if (p.next_steps && p.next_steps.length > 0) {
+    nextStepsItems = p.next_steps.map(step => {
+      const stClass = step.status === "dringend" ? "badge-prio urgent" : step.status === "fällig" ? "badge-prio high" : step.status === "bereit" ? "badge-prio normal" : "chip";
+      return `
+        <li class="mgmt-step-item">
+          <div class="mgmt-step-item-left">
+            <span style="color:var(--brand-2);font-weight:700">✓</span>
+            <div>
+              <span style="font-weight:650">${JS26.esc(step.action)}</span>
+              ${step.owner ? `<span style="color:var(--muted);font-size:11px"> · ${JS26.esc(step.owner)}</span>` : ""}
+            </div>
+          </div>
+          <div class="mgmt-step-item-right">
+            ${step.status ? `<span class="${stClass}">${JS26.esc(step.status)}</span>` : ""}
+            ${step.due ? `<span class="mono" style="color:var(--muted);font-size:11px">${JS26.de(step.due)}</span>` : ""}
+          </div>
+        </li>
+      `;
+    }).join("");
+  } else if (r.next_action) {
+    nextStepsItems = `
+      <li class="mgmt-step-item">
+        <div class="mgmt-step-item-left">
+          <span style="color:var(--brand-2);font-weight:700">✓</span>
+          <span style="font-weight:650">${JS26.esc(r.next_action)}</span>
+        </div>
+        <div class="mgmt-step-item-right">
+          <span class="badge-prio high">Fällig</span>
+          ${r.due ? `<span class="mono" style="color:var(--muted);font-size:11px">${JS26.de(r.due)}</span>` : ""}
+        </div>
+      </li>
+    `;
+  }
+
+  return `
+    <div class="brief-card" id="${slug(r)}" style="scroll-margin-top:20px">
+      <div class="brief-header">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+            ${JS26.pill(r.stage)}
+            <span class="badge-prio ${prio.lvl}">${prio.label}</span>
+            <span class="chip" style="padding:2px 8px;font-size:11px;font-weight:600">${JS26.esc(r.lane)}</span>
+            ${r.uid ? `<span class="mono" style="color:var(--muted);font-size:11px">UID ${JS26.esc(r.uid)}</span>` : ""}
+          </div>
+          <h2 style="margin:0;font-size:18px;font-weight:750;color:var(--ink);letter-spacing:-0.01em;padding:0;background:none;border:none">
+            ${JS26.esc(r.company)}
+            <span style="font-weight:400;color:var(--ink-2);font-size:15px">· ${JS26.esc(r.role)}</span>
+          </h2>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          ${JS26.scoreBadge(r.score, r.stage)}
+          ${r.folder_id ? `<a href="https://drive.google.com/drive/folders/${JS26.esc(r.folder_id)}" target="_blank" rel="noopener" class="chip on" style="font-size:11.5px">Drive-Ordner ↗</a>` : ""}
+        </div>
+      </div>
+
+      <!-- Quick Metrics Ribbon -->
+      <div style="padding:10px 20px;background:var(--panel-3);display:flex;gap:20px;flex-wrap:wrap;font-size:11.5px;border-bottom:1px solid var(--line-2);color:var(--ink-2)">
+        <div><span style="color:var(--muted)">Beworben:</span> <b>${JS26.de(r.applied)}</b></div>
+        <div><span style="color:var(--muted)">Letztes Signal:</span> ${JS26.healthDot(h)} vor <b>${h.l}</b> (${JS26.de(r.last_event)})</div>
+        <div><span style="color:var(--muted)">Gehaltsband:</span> ${sal}</div>
+        ${r.contacts ? `<div><span style="color:var(--muted)">Panel:</span> <b>${JS26.esc(r.contacts)}</b></div>` : ""}
+      </div>
+
+      <div class="tabbar" role="tablist">
+        <button type="button" class="tab on" role="tab" aria-selected="true" data-pane="now">Aktuell</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" data-pane="intel">Cheat Sheets${JS26.intelCount(I[JS26.intelKey(r.uid)]) ? ` <span class="badge">${JS26.intelCount(I[JS26.intelKey(r.uid)])}</span>` : ""}</button>
+      </div>
+      <div class="tabpane" data-pane="now">
+
+      <!-- Dedicated Per-Dossier Management Summary & Next Steps Roadmap -->
+      <div class="brief-mgmt-block">
+        <div class="brief-mgmt-block-header">
+          <div class="brief-mgmt-block-title">
+            <span>📋 Management Summary &amp; Nächste Schritte</span>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="badge-prio ${prio.lvl}">${prio.label}</span>
+            ${r.due ? `<span class="chip" style="font-size:10.5px">Fällig: ${JS26.de(r.due)}</span>` : ""}
+          </div>
+        </div>
+        <div class="brief-mgmt-summary-text">
+          ${JS26.esc(mgmtSummaryText)}
+        </div>
+        ${nextStepsItems ? `
+          <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px">
+            Konkrete Aktionsschritte:
+          </div>
+          <ul class="mgmt-steps-list">
+            ${nextStepsItems}
+          </ul>
+        ` : ""}
+      </div>
+
+      <!-- Hooks & Risks Grid -->
+      <div class="brief-grid ${hooks && risks ? 'brief-grid-2' : ''}">
+        <!-- Hooks Block -->
+        <div class="brief-block highlight">
+          <h4 style="color:var(--brand-2)">🛡️ Strategische Hebel &amp; Hooks</h4>
+          ${hooks ? `<ul class="brief-list">${hooks}</ul>` : '<div style="color:var(--muted);font-size:12px">Bisher keine spezifischen Hooks in prep.json hinterlegt.</div>'}
+        </div>
+
+        <!-- Risks Block -->
+        <div class="brief-block warning">
+          <h4 style="color:var(--warn)">⚠️ Antizipierte Risiken &amp; Einwandbehandlung</h4>
+          ${risks ? `<ul class="brief-list">${risks}</ul>` : '<div style="color:var(--muted);font-size:12px">Bisher keine Risiken in prep.json hinterlegt.</div>'}
+        </div>
+      </div>
+
+      <!-- Preparation Assets & Last Signal -->
+      <div style="padding:0 20px 18px;display:grid;grid-template-columns:1fr;gap:14px">
+        ${assets ? `
+          <div class="brief-block success">
+            <h4 style="color:var(--ok)">📑 Vorbereitungsdokumente &amp; Dossiers</h4>
+            <ul class="brief-list">${assets}</ul>
+          </div>
+        ` : ""}
+
+        <div class="brief-block">
+          <h4 style="color:var(--ink-2)">💬 Chronik &amp; Letztes Signal</h4>
+          <div style="color:var(--ink);font-size:12px;line-height:1.5;white-space:pre-wrap">${JS26.esc(r.note || "Kein Notizverlauf erfasst.")}</div>
+        </div>
+      </div>
+      </div>
+      <div class="tabpane" data-pane="intel" hidden>${JS26.intelHtml(I[JS26.intelKey(r.uid)])}${JS26.intelStamp(D.intel)}</div>
+    </div>`;
+}).join("") || `<div class="card body" style="text-align:center;padding:40px;color:var(--muted)">Keine aktiven Verfahren in den Stufen Screening, Interviewing oder Final.</div>`;
+
+/* Tabs: one delegated listener for all cards */
+document.getElementById("briefs").addEventListener("click", e => {
+  const tab = e.target.closest(".tab");
+  if (!tab) return;
+  const card = tab.closest(".brief-card");
+  card.querySelectorAll(".tab").forEach(t => { t.classList.toggle("on", t === tab); t.setAttribute("aria-selected", t === tab ? "true" : "false"); });
+  card.querySelectorAll(".tabpane").forEach(p => { p.hidden = p.dataset.pane !== tab.dataset.pane; });
+});
+
+/* Filter listener */
+document.getElementById("q").addEventListener("input", e => {
+  const q = JS26.norm(e.target.value);
+  live.forEach(r => {
+    const el = document.getElementById(slug(r));
+    if (!el) return;
+    const match = !q || r._norm.includes(q);
+    el.style.display = match ? "" : "none";
+  });
+  rState.q = e.target.value;
+  renderReader();
+});
+
+/* ============================================================================================================
+   Reading pane (Lesezone). The documents come from render.py (D.reader); read marks live only in this browser.
+   ============================================================================================================ */
+const READ = D.reader || {};
+const rEl = { list: document.getElementById("reader-list"), pane: document.getElementById("reader-pane") };
+const rState = { key: null, doc: 0, q: "", mode: "read" };
+const rStore = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* private window: marks are a convenience */ } }
+};
+const seen = rStore.get("briefings-read") || {};
+const docKey = (key, d) => key + "|" + d.path;
+const isSeen = (key, d) => seen[docKey(key, d)] === d.modified;
+
+function readerGroupsNow() {
+  const q = JS26.norm(rState.q);
+  return JS26.readerGroups(D.rows, READ).map(g => Object.assign({}, g, {
+    items: g.items.filter(it => !q || JS26.norm([it.r.company, it.r.role, it.r.uid].join(" ")).includes(q))
+  })).filter(g => g.items.length);
+}
+
+function renderReader() {
+  const groups = readerGroupsNow();
+  const flat = groups.flatMap(g => g.items);
+  if (!flat.some(x => x.key === rState.key)) { rState.key = flat.length ? flat[0].key : null; rState.doc = 0; }
+  const it = flat.find(x => x.key === rState.key);
+  if (!it) {
+    rEl.pane.innerHTML = `<div class="intel-empty">${Object.keys(READ).length ? "Kein Treffer für diesen Filter." : "Noch keine Dokumente für laufende Verfahren (intel_index.py und render.py neu laufen lassen)."}</div>`;
+  } else {
+    const docs = it.entry.docs;
+    rState.doc = Math.max(0, Math.min(rState.doc, docs.length - 1));
+    const d = docs[rState.doc];
+    seen[docKey(it.key, d)] = d.modified;
+    rStore.set("briefings-read", seen);
+    const r = it.r;
+    rEl.pane.innerHTML = `
+      <div class="reader-head">
+        <div>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px">${JS26.pill(r.stage)}<span class="mono" style="color:var(--muted);font-size:11px">UID ${JS26.esc(r.uid)}</span></div>
+          <h2>${JS26.esc(r.company)} <span style="font-weight:400;color:var(--ink-2);font-size:14px">· ${JS26.esc(r.role)}</span></h2>
+        </div>
+        <div class="reader-nav">
+          ${r.folder_id ? `<a class="chip" href="https://drive.google.com/drive/folders/${JS26.esc(r.folder_id)}" target="_blank" rel="noopener">Drive-Ordner ↗</a>` : ""}
+          <button type="button" class="chip" data-nav="-1" title="Vorherige Position (↑)">‹ Zurück</button>
+          <button type="button" class="chip" data-nav="1" title="Nächste Position (↓)">Weiter ›</button>
+        </div>
+      </div>
+      ${JS26.readerSwitchHtml(docs, rState.doc)}
+      <div class="reader-body">${JS26.readerDocHtml(d)}</div>`;
+  }
+  rEl.list.innerHTML = groups.map(g => `
+    <div class="reader-group"><h3 class="reader-stage">${JS26.esc(g.label)} <span class="badge">${g.items.length}</span></h3>` +
+    g.items.map(x => {
+      const first = x.entry.docs[0];
+      const unread = x.entry.docs.some(z => !isSeen(x.key, z));
+      return `<button type="button" class="reader-item${x.key === rState.key ? " on" : ""}" data-key="${JS26.esc(x.key)}">
+        <span class="reader-name">${JS26.esc(x.r.company)}</span>
+        <span class="reader-role">${JS26.esc(x.r.role)}</span>
+        <span class="reader-sub">${JS26.esc(first.label)} · ${JS26.de(first.modified)}${unread ? ' <span class="reader-dot" title="ungelesen" aria-label="ungelesen"></span>' : ""}</span>
+      </button>`;
+    }).join("") + `</div>`).join("") || `<div class="intel-empty">Keine Positionen${rState.q ? " für diesen Filter" : " mit Dokumenten"}.</div>`;
+  const on = rEl.list.querySelector(".reader-item.on");
+  if (on && on.scrollIntoView) on.scrollIntoView({ block: "nearest" });
+}
+
+function moveReader(delta) {
+  const flat = readerGroupsNow().flatMap(g => g.items);
+  if (!flat.length) return;
+  const i = flat.findIndex(x => x.key === rState.key);
+  const j = Math.max(0, Math.min(flat.length - 1, (i < 0 ? 0 : i + delta)));
+  rState.key = flat[j].key; rState.doc = 0;
+  renderReader();
+}
+
+function moveDoc(delta) {
+  const it = readerGroupsNow().flatMap(g => g.items).find(x => x.key === rState.key);
+  if (!it) return;
+  rState.doc = Math.max(0, Math.min(it.entry.docs.length - 1, rState.doc + delta));
+  renderReader();
+}
+
+rEl.list.addEventListener("click", e => {
+  const b = e.target.closest("[data-key]");
+  if (!b) return;
+  rState.key = b.dataset.key; rState.doc = 0;
+  renderReader();
+});
+rEl.pane.addEventListener("click", e => {
+  const s = e.target.closest("[data-doc]");
+  if (s) { rState.doc = Number(s.dataset.doc) || 0; renderReader(); return; }
+  const n = e.target.closest("[data-nav]");
+  if (n) moveReader(Number(n.dataset.nav) || 0);
+});
+document.addEventListener("keydown", e => {
+  if (rState.mode !== "read" || e.altKey || e.ctrlKey || e.metaKey) return;
+  const tag = (e.target && e.target.tagName) || "";
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test(tag)) return;
+  const k = e.key;
+  if (k === "ArrowDown" || k === "j") { e.preventDefault(); moveReader(1); }
+  else if (k === "ArrowUp" || k === "k") { e.preventDefault(); moveReader(-1); }
+  else if (k === "ArrowRight") { e.preventDefault(); moveDoc(1); }
+  else if (k === "ArrowLeft") { e.preventDefault(); moveDoc(-1); }
+});
+
+/* Mode switch: Lesezone | Dossiers (the choice is remembered in this browser) */
+function applyMode(mode) {
+  rState.mode = mode === "dossier" ? "dossier" : "read";
+  document.getElementById("reader-root").hidden = rState.mode !== "read";
+  document.getElementById("briefs").hidden = rState.mode !== "dossier";
+  document.querySelectorAll("#modes .tab").forEach(t => {
+    const on = t.dataset.mode === rState.mode;
+    t.classList.toggle("on", on); t.setAttribute("aria-selected", on ? "true" : "false");
+  });
+  rStore.set("briefings-mode", rState.mode);
+}
+document.getElementById("modes").addEventListener("click", e => {
+  const t = e.target.closest("[data-mode]");
+  if (t) applyMode(t.dataset.mode);
+});
+document.getElementById("jump").addEventListener("click", () => applyMode("dossier"));
+applyMode(rStore.get("briefings-mode") === "dossier" ? "dossier" : "read");
+renderReader();
+</script>{% endblock %}

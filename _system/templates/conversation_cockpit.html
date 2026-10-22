@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+.ck-wrap { max-width: 900px; margin: 0 auto; }
+.ck-hdr { background: var(--brand-grad); color: #fff; padding: 20px 24px; border-radius: var(--radius); margin-bottom: 14px; }
+.ck-hdr h1 { margin: 0; font-size: 22px; font-weight: 750; color: #fff; }
+.ck-hdr .sub { font-size: 15px; opacity: .92; margin-top: 2px; }
+.ck-hdr .meta { font-size: 11.5px; opacity: .78; margin-top: 8px; line-height: 1.7; }
+.ck-sec { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 22px; margin-bottom: 14px; }
+.ck-sec h2 { margin: 0 0 12px; font-size: 14px; font-weight: 700; color: var(--brand); border-bottom: 2px solid var(--brand-tint); padding-bottom: 6px; }
+.ck-sec h3 { margin: 14px 0 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.ck-sec p, .ck-sec li { font-size: 13px; line-height: 1.6; color: var(--ink); margin: 0 0 6px; }
+.ck-lede { border-left: 3px solid var(--brand); padding-left: 14px; font-size: 14.5px; line-height: 1.55; margin: 0 0 12px; }
+.ck-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 8px; }
+.ck-card { border: 1px solid var(--line); border-radius: var(--radius); padding: 11px 14px; background: var(--panel-3, var(--panel)); }
+.ck-card h4 { margin: 0 0 4px; font-size: 12.5px; font-weight: 700; }
+.ck-card p { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.ck-quote { background: var(--brand-tint); border-left: 3px solid var(--brand); padding: 10px 14px; border-radius: 0 var(--radius) var(--radius) 0; margin: 8px 0; font-size: 13px; font-style: italic; }
+.ck-draft { background: var(--panel-3, var(--panel)); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; margin: 8px 0; white-space: pre-wrap; font-size: 13px; line-height: 1.6; }
+.ck-step { display: grid; grid-template-columns: 26px 1fr; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line-2); }
+.ck-step .n { width: 22px; height: 22px; border-radius: 50%; background: var(--brand); color: #fff; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.ck-step b { font-size: 13px; display: block; }
+.ck-step span { font-size: 12.5px; color: var(--muted); line-height: 1.5; display: block; }
+.ck-risk { border: 1px solid var(--line); border-left: 4px solid var(--warn, #b7791f); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 8px; }
+.ck-risk.learned { border-left-color: var(--brand); }
+.ck-risk h4 { margin: 0 0 4px; font-size: 13px; font-weight: 700; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.ck-risk .tag { font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 3px; padding: 1px 5px; }
+.ck-risk p { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.ck-risk p.fix { color: var(--ink); margin-top: 5px; }
+.ck-ledger { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 640px) { .ck-ledger { grid-template-columns: 1fr; } }
+.ck-ledger h4 { margin: 0 0 6px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.ck-ledger ul { margin: 0; padding-left: 17px; }
+.ck-q { display: grid; grid-template-columns: 28px 1fr; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line-2); }
+.ck-q .r { width: 24px; height: 24px; border-radius: 50%; background: var(--brand); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.ck-q .t { font-size: 13.5px; font-weight: 600; line-height: 1.5; }
+.ck-q .m { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.ck-check { padding: 7px 0; border-bottom: 1px solid var(--line-2); font-size: 13px; }
+.ck-check::before { content: "☐ "; }
+.ck-check b { display: inline; }
+.ck-check span { display: block; font-size: 12.5px; color: var(--muted); margin-left: 20px; }
+.ck-notes { min-height: 120px; border: 1px dashed var(--line); border-radius: var(--radius); }
+.gap { display: inline-block; background: var(--bad-tint); color: var(--bad); border: 1px solid color-mix(in srgb, var(--bad) 30%, transparent); padding: 1px 7px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+.ck-live { border: 2px solid var(--brand); }
+.ck-anker { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 4px; }
+.ck-anker span { background: var(--brand-tint); border: 1px solid var(--brand); color: var(--brand); border-radius: 99px; padding: 3px 12px; font-size: 12.5px; font-weight: 700; }
+.ck-bio { font-size: 14px; line-height: 1.6; }
+.ck-pq { margin-top: 10px; }
+.ck-pq b { display: block; font-size: 13px; }
+.ck-pq span { display: block; font-size: 13px; color: var(--muted); line-height: 1.5; }
+.ck-panic-btn { display: none; }
+.js .ck-panic-btn { display: block; position: fixed; right: 16px; bottom: 16px; z-index: 40; background: var(--bad, #b3261e); color: #fff; border: 0; border-radius: 99px; padding: 10px 16px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+.js .ck-panic { display: none; position: fixed; right: 16px; bottom: 64px; z-index: 41; width: min(420px, calc(100vw - 32px)); max-height: 72vh; overflow-y: auto; box-shadow: 0 20px 50px -20px rgba(0,0,0,.55); border-top: 3px solid var(--bad, #b3261e); }
+.js .ck-panic.open { display: block; }
+.ck-btn { display: none; font-size: 12px; font-weight: 700; padding: 6px 12px; border: 1px solid var(--brand); color: var(--brand); background: var(--panel); border-radius: 4px; cursor: pointer; margin: 8px 6px 0 0; }
+.js .ck-btn { display: inline-block; }
+.ck-hint { font-size: 11px; color: var(--muted); }
+@media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .ck-sec { break-inside: avoid; } }
+</style>
+{% endblock %}
+{% block body %}
+<div class="ck-wrap">
+
+  <div class="ck-hdr">
+    <div style="font-size:10px;opacity:.75;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">Cockpit · {{ "Gespräch" if lang == "de" else "Conversation" }}</div>
+    <h1>{{ company }}</h1>
+    <div class="sub">{{ role }}</div>
+    <div class="meta">{{ today }} · UID {{ uid }}{% if termin %} · {{ termin }}{% endif %}{% if partner_line %}<br>{{ partner_line }}{% endif %}</div>
+  </div>
+
+  <div class="ck-sec ck-live" id="ck-live">
+    <h2>Live-Leitfaden · {{ "auf einen Blick" if lang == "de" else "at a glance" }}</h2>
+    <h3>{{ "Meine Bio für diese Rolle (30 Sekunden)" if lang == "de" else "My bio for this role (30 s)" }}</h3>
+    {% if bio and bio.kurz %}<p class="ck-bio">{{ bio.kurz }}</p>{% else %}<p><span class="gap">PREP GAP</span> Bio fehlt.</p>{% endif %}
+    {% if bio and bio.anker %}<div class="ck-anker">{% for a in bio.anker %}<span>{{ a }}</span>{% endfor %}</div>{% endif %}
+    {% if questions %}<h3>{{ "Erste Fragen" if lang == "de" else "First questions" }}</h3>
+      {% for q in questions[:3] %}<div class="ck-q"><div class="r">{{ loop.index }}</div><div><div class="t">{{ q.question }}</div>{% if q.to %}<div class="m">{{ q.to }}</div>{% endif %}</div></div>{% endfor %}{% endif %}
+    <p class="ck-hint">Alles Weitere darunter. Mit Taste P öffnet sich die Panikkarte, wenn die Datei direkt im Browser geöffnet ist.</p>
+  </div>
+
+  <div class="ck-sec ck-panic" id="panic">
+    <h2>{{ "Panikkarte: wenn es klemmt" if lang == "de" else "Panic card" }}</h2>
+    {% if panik %}{% for p in panik %}<div class="ck-pq"><b>{{ p.frage }}</b><span>{{ p.antwort }}</span></div>{% endfor %}
+    {% else %}<p><span class="gap">PREP GAP</span> Panikkarte fehlt.</p>{% endif %}
+  </div>
+
+  <div class="ck-sec" id="ck-lage">
+    <h2>1 · Die Lage</h2>
+    {% if lage and lage.lede %}<p class="ck-lede">{{ lage.lede }}</p>{% else %}<p><span class="gap">PREP GAP</span> Lage fehlt.</p>{% endif %}
+    {% if lage and lage.karten %}<div class="ck-cards">{% for k in lage.karten %}<div class="ck-card"><h4>{{ k.titel }}</h4><p>{{ k.text }}</p></div>{% endfor %}</div>{% endif %}
+  </div>
+
+  {% if stand %}
+  <div class="ck-sec" id="ck-stand">
+    <h2>2 · Stand und letztes Gespräch</h2>
+    {% for s in stand %}
+      <p>{{ s.text }}</p>
+      {% if s.quote %}<div class="ck-quote">{{ s.quote }}</div>{% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="ck-sec" id="ck-personen">
+    <h2>3 · {{ "Gesprächspartner" if lang == "de" else "Panel" }}</h2>
+    {% if contacts_detail %}
+      {% for c in contacts_detail %}
+      <h3>{{ c.name }}{% if c.title %} — {{ c.title }}{% endif %}</h3>
+      <p>{{ c.background }}</p>
+      {% if c.language_note %}<p style="color:var(--muted)"><b>Stil:</b> {{ c.language_note }}</p>{% endif %}
+      {% endfor %}
+    {% else %}<p><span class="gap">PREP GAP</span> Keine Gesprächspartner.</p>{% endif %}
+  </div>
+
+  <div class="ck-sec" id="ck-vorschlag">
+    <h2>4 · Der Vorschlag</h2>
+    {% if vorschlag and vorschlag.satz %}
+      <div class="ck-draft">{{ vorschlag.satz }}</div>
+      {% if vorschlag.text %}<p>{{ vorschlag.text }}</p>{% endif %}
+      {% if vorschlag.karten %}<div class="ck-cards">{% for k in vorschlag.karten %}<div class="ck-card"><h4>{{ k.titel }}</h4><p>{{ k.text }}</p></div>{% endfor %}</div>{% endif %}
+    {% else %}<p><span class="gap">PREP GAP</span> Vorschlag fehlt.</p>{% endif %}
+  </div>
+
+  <div class="ck-sec" id="ck-fuehrung">
+    <h2>5 · Gesprächsführung</h2>
+    {% if fuehrung and fuehrung.einstieg %}
+      <h3>Einstieg</h3>
+      <div class="ck-draft">{{ fuehrung.einstieg }}</div>
+      {% if fuehrung.bewegungen %}<h3>Die Bewegungen</h3>
+        {% for b in fuehrung.bewegungen %}<div class="ck-step"><div class="n">{{ loop.index }}</div><div><b>{{ b.titel }}</b><span>{{ b.text }}</span></div></div>{% endfor %}{% endif %}
+      {% if fuehrung.abschluss %}<h3>Abschluss</h3><p>{{ fuehrung.abschluss }}</p>{% endif %}
+    {% else %}<p><span class="gap">PREP GAP</span> Gesprächsführung fehlt.</p>{% endif %}
+  </div>
+
+  <div class="ck-sec" id="meine-fragen">
+    <h2>6 · {{ "Meine Fragen an das Panel (nach Priorität)" if lang == "de" else "My questions for the panel (ranked)" }}</h2>
+    {% if questions %}
+      {% for q in questions %}
+      <div class="ck-q"><div class="r">{{ loop.index }}</div><div><div class="t">{{ q.question }}</div>
+        {% if q.to %}<div class="m"><b>An:</b> {{ q.to }}</div>{% endif %}{% if q.why %}<div class="m"><b>Warum:</b> {{ q.why }}</div>{% endif %}</div></div>
+      {% endfor %}
+    {% else %}<p><span class="gap">PREP GAP</span> Keine Fragen.</p>{% endif %}
+  </div>
+
+  <div class="ck-sec" id="ck-flanken">
+    <h2>7 · Offene Flanken</h2>
+    {% for f in flanken %}
+    <div class="ck-risk"><h4>{{ f.titel }}<span class="tag">dieses Gespräch</span></h4><p>{{ f.problem }}</p>{% if f.stattdessen %}<p class="fix"><b>Stattdessen:</b> {{ f.stattdessen }}</p>{% endif %}</div>
+    {% endfor %}
+    {% for f in playbook %}
+    <div class="ck-risk learned"><h4>{{ f.titel }}<span class="tag">gelernt{% if f.quelle %} · {{ f.quelle }}{% endif %}</span></h4><p>{{ f.problem }}</p>{% if f.stattdessen %}<p class="fix"><b>Stattdessen:</b> {{ f.stattdessen }}</p>{% endif %}</div>
+    {% endfor %}
+    {% if not flanken and not playbook %}<p style="color:var(--muted)">Keine Flanken erfasst.</p>{% endif %}
+  </div>
+
+  <div class="ck-sec" id="ck-hygiene">
+    <h2>8 · Faktenhygiene</h2>
+    <div class="ck-ledger">
+      <div><h4>Belegt</h4><ul>{% for b in belegt %}<li>{{ b }}</li>{% endfor %}</ul></div>
+      <div><h4>Unbelegt, nicht behaupten</h4><ul>{% for u in unbelegt %}<li>{{ u }}</li>{% endfor %}</ul></div>
+    </div>
+  </div>
+
+  <div class="ck-sec" id="ck-vorher">
+    <h2>9 · Vor dem Termin</h2>
+    {% if vorher %}{% for v in vorher %}<div class="ck-check"><b>{{ v.titel }}</b>{% if v.text %}<span>{{ v.text }}</span>{% endif %}</div>{% endfor %}
+    {% else %}<p><span class="gap">PREP GAP</span> Vorbereitung fehlt.</p>{% endif %}
+  </div>
+
+  <div class="ck-sec" id="ck-bio">
+    <h2>10 · {{ "Meine Bio für diese Rolle" if lang == "de" else "My bio for this role" }}</h2>
+    {% if bio and bio.lang %}
+      <h3>{{ "Vorstellung (90 Sekunden)" if lang == "de" else "Introduction (90 s)" }}</h3><p class="ck-bio">{{ bio.lang }}</p>
+      {% if bio.bezug %}<h3>{{ "Bezug auf Rolle und Erwartung" if lang == "de" else "Link to role and expectations" }}</h3><p>{{ bio.bezug }}</p>{% endif %}
+      {% if bio.nicht_sagen %}<h3>{{ "Nicht sagen" if lang == "de" else "Do not say" }}</h3><ul>{% for n in bio.nicht_sagen %}<li>{{ n }}</li>{% endfor %}</ul>{% endif %}
+    {% else %}<p><span class="gap">PREP GAP</span> Vorstellung fehlt.</p>{% endif %}
+  </div>
+
+  <div class="ck-sec" id="ck-notizen">
+    <h2>11 · Notizen</h2>
+    <div class="ck-notes" contenteditable="true" id="ck-notes-box" style="padding:10px 12px" aria-label="Notizen"></div>
+    <div class="ck-notes-bar"><button type="button" class="ck-btn" id="ck-save">Notizen sichern (.txt)</button> <button type="button" class="ck-btn" id="ck-copy">Kopieren</button></div>
+    <p class="ck-hint">Nur in der direkt geöffneten Datei. „Sichern“ speichert <b>{{ notes_filename }}</b>; diese Datei in <b>30 Verlauf</b> dieses Verfahrens legen, dann nimmt der nächste Sync sie als Eingabe für Debrief und Nachbereitung. Zwischenstand bleibt lokal im Browser.</p>
+  </div>
+
+</div>
+{% endblock %}
+{% block script %}<script>
+(function(){
+  try {
+    document.documentElement.classList.add("js"); document.body.classList.add("js");
+    var panel = document.getElementById("panic"), btn = document.createElement("button");
+    btn.className = "ck-panic-btn"; btn.type = "button"; btn.textContent = "Panikkarte"; btn.setAttribute("aria-expanded", "false");
+    document.body.appendChild(btn);
+    function toggle(force){ var o = typeof force === "boolean" ? force : !panel.classList.contains("open"); panel.classList.toggle("open", o); btn.setAttribute("aria-expanded", o ? "true" : "false"); }
+    btn.addEventListener("click", function(){ toggle(); });
+    document.addEventListener("keydown", function(e){
+      var t = e.target; if (t && (t.isContentEditable || t.tagName === "TEXTAREA" || t.tagName === "INPUT")) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      var k = e.key.toLowerCase(); if (k === "p") toggle(); else if (k === "escape") toggle(false);
+    });
+    function notesText(){ var b = document.getElementById("ck-notes-box"); return "Gesprächsnotizen · {{ company }} · {{ role }} · {{ today }}\n\n" + (b ? b.innerText : ""); }
+    var sv = document.getElementById("ck-save"), cp = document.getElementById("ck-copy");
+    if (sv) sv.addEventListener("click", function(){ try { var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([notesText()], { type: "text/plain;charset=utf-8" })); a.download = {{ notes_filename|tojson }}; document.body.appendChild(a); a.click(); a.remove(); } catch (e) {} });
+    if (cp) cp.addEventListener("click", function(){ try { navigator.clipboard.writeText(notesText()); cp.textContent = "Kopiert"; setTimeout(function(){ cp.textContent = "Kopieren"; }, 1400); } catch (e) {} });
+    var key = "cockpit-notes-" + (document.title || "x"), box = document.getElementById("ck-notes-box");
+    try { var saved = window.localStorage.getItem(key); if (saved && box) box.textContent = saved; if (box) box.addEventListener("input", function(){ window.localStorage.setItem(key, box.textContent); }); } catch (e) {}
+  } catch (e) {}
+})();
+</script>{% endblock %}

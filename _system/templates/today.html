@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block head %}
+<style>
+.today-grid { display: grid; gap: 16px; }
+.hstrip { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.hcheck { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; }
+.hcheck .hg { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.hcheck .hn { font-weight: 700; font-size: 13px; margin: 2px 0 6px; }
+.hcheck .hs { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink); }
+.hcheck .hr { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.hi { font-weight: 700; }
+.st-ok .hi { color: var(--xl-ok); }
+.st-watch .hi { color: var(--xl-watch); }
+.st-act .hi { color: var(--xl-act); }
+.st-act { border-left: 3px solid var(--xl-act); }
+.st-watch { border-left: 3px solid var(--xl-watch); }
+.st-ok { border-left: 3px solid var(--xl-ok); }
+.overall { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.overall .big { font-family: var(--font-head); font-weight: 700; font-size: 22px; }
+.incident { background: var(--panel-3); border-left: 3px solid var(--xl-act); padding: 8px 12px; border-radius: var(--radius-sm); margin: 8px 0; }
+.trow { display: grid; grid-template-columns: 7.5em 1fr auto; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+.trow:last-child { border-bottom: 0; }
+.trow .due { font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+.trow.overdue .due { color: var(--xl-accent-text); font-weight: 700; }
+.uidtag { font-size: 11px; padding: 1px 8px; border-radius: 999px; background: var(--panel-3); color: var(--ink); white-space: nowrap; align-self: start; }
+.empty { color: var(--muted); font-size: 13px; margin: 4px 0; }
+.tags { display: flex; gap: 6px; align-items: flex-start; }
+.uidtag.channel { background: transparent; border: 1px solid var(--line-strong); }
+.lead { font-size: 12px; color: var(--ink); }
+.uidtag.missing { background: transparent; border: 1px solid var(--xl-accent-text); color: var(--xl-accent-text); }
+.stale-banner { display: none; background: var(--panel-3); border-left: 3px solid var(--xl-act); padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 12px; }
+</style>
+{% endblock %}
+{% block body %}
+<div class="stale-banner" id="stale-banner" role="alert"><b>● Handeln</b> · Diese Seite ist älter als 48 Stunden — der letzte Lauf ist ausgeblieben.</div>
+<div class="today-grid">
+
+  <section class="card" aria-label="Systemgesundheit">
+    <div class="overall">
+      <span class="big">{{ overall_icon }} {{ overall_label }}</span>
+      <span class="empty">{{ n_act }} × Handeln · {{ n_watch }} × Beobachten · Stand {{ generated_at }}</span>
+    </div>
+    {% for i in incidents %}<div class="incident"><b>● Störung</b> · {{ i }}</div>{% endfor %}
+    <div class="hstrip">
+      {% for c in checks %}
+      <div class="hcheck st-{{ c.status_key }}">
+        <div class="hg">{{ c.group_label }}</div>
+        <div class="hn">{{ c.name }}</div>
+        <div class="hs"><span class="hi" aria-hidden="true">{{ c.icon }}</span><span>{{ c.status_label }}</span></div>
+        <div class="hr">{{ c.reason }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="empty">{{ deploy_line }}</div>
+  </section>
+
+  <section class="card" aria-label="Was der letzte Lauf geändert hat">
+    <h2>Seit dem letzten Lauf</h2>
+    {% if last_run %}<p class="empty">Letzter Lauf: {{ last_run }}</p>{% endif %}
+    {% if changes %}
+      <p class="empty">Änderungen an den Zeilen seit {{ changes_since }}</p>
+      {% for c in changes %}<div class="trow"><span class="due">{{ c.label }}</span><span>{{ c.text }}</span><span></span></div>{% endfor %}
+    {% else %}<p class="empty">Keine Änderungen an den Zeilen seit dem letzten Lauf (oder kein früherer Stand archiviert).</p>{% endif %}
+  </section>
+
+  {% if suggestions %}
+  <section class="card" aria-label="Vorschläge für freie Top-10-Plätze">
+    <h2>Fokus: aussichtsreichste Verfahren</h2>
+    <p class="empty">Die Top 10 sind deine Fokus-Liste: deine angehefteten Funde plus die am besten bewerteten Verfahren, auch schon beworbene (z. B. zum Nachfassen). Für die übrigen {{ free_places }} Plätze schlägt die Rangliste vom {{ suggestions_date }} vor (Fit, Abdeckung, Lane, Stand); anheften mit <span class="mono">python3 _system/top10.py pin &lt;uid&gt;</span></p>
+    {% for s in suggestions %}<div class="trow"><span class="due">{{ s.score }} von 100</span><span><b>{{ s.company }}</b> · {{ s.role }} <span class="empty">({{ s.stage }})</span><br><span class="empty">{{ s.why }}</span></span><span class="uidtag">uid {{ s.uid }}</span></div>{% endfor %}
+  </section>
+  {% endif %}
+
+  <section class="card" aria-label="Was heute Ihre Aufmerksamkeit braucht">
+    <h2>Heute für Sie</h2>
+    {% if needs %}
+      {% for n in needs %}
+      <div class="trow {{ n.overdue }}"><span class="due">{{ n.due }}</span>
+        <span><b>{{ n.company }}</b> · {{ n.role }}<br><span class="empty">{{ n.action }}</span></span>
+        <span class="uidtag">uid {{ n.uid }}</span></div>
+      {% endfor %}
+    {% else %}<p class="empty">Nichts fällig in den nächsten 7 Tagen.</p>{% endif %}
+    {% if new_today %}
+      <h3>Neu entdeckt</h3>
+      {% for n in new_today %}<div class="trow"><span class="due">neu</span><span><b>{{ n.company }}</b> · {{ n.role }}</span><span class="uidtag">uid {{ n.uid }}</span></div>{% endfor %}
+    {% endif %}
+  </section>
+
+  <section class="card" aria-label="Eigene Funde und Top 10">
+    <h2>Eigene Funde · Fokus-Liste (Top 10)</h2>
+    <p class="empty">{{ own_slots }}</p>
+    {% if own_finds %}
+      {% for f in own_finds %}
+      <div class="trow"><span class="due">{{ f.chip }}</span>
+        <span><b>{{ f.company }}</b> · {{ f.role }}<br><span class="empty">{{ f.note }}{% if f.coverage %}<br>{{ f.coverage }}{% endif %}{% if f.draft %}<br>{{ f.draft }}{% endif %}</span></span>
+        <span class="tags"><span class="uidtag">uid {{ f.uid }}</span></span></div>
+      {% endfor %}
+    {% else %}<p class="empty">Noch keine eigenen Funde gepinnt. Lege eine Ausschreibung in <span class="mono">_Eingang</span> ab.</p>{% endif %}
+    {% if intake_lines %}
+      <h3>Im Eingang</h3>
+      {% for u in intake_lines %}<div class="trow"><span class="due">{{ u.label }}</span><span>{{ u.file }} — {{ u.reason }}{% if u.href %} · <a href="{{ u.href }}">{{ u.target }}</a>{% endif %}</span><span></span></div>{% endfor %}
+      {% if intake_hint %}<p class="empty">Bestätigen: die Begleitdatei in einem Texteditor öffnen (Rechtsklick → Öffnen mit), „Bestätigt: ja“ setzen, oder <span class="mono">python3 _system/intake.py --confirm "Name"</span> (zeigt den Vorschlag und fragt nach).</p>{% endif %}
+    {% endif %}
+  </section>
+
+  <section class="card" aria-label="Laufende Verfahren">
+    <h2>Laufende Verfahren</h2>
+    {% if live %}
+      {% for p in live %}
+      <div class="trow"><span class="due">{{ p.stage }}</span>
+        <span><a href="03_briefings.html"><b>{{ p.company }}</b></a> · {{ p.role }}<br><span class="empty">{{ p.note }}</span>{% if p.intel_work %}<br><span class="empty">Recherche: {{ p.intel_work }}</span>{% endif %}{% for l in p.leads %}<br><span class="lead">→ <b>{{ l.text }}</b></span>{% endfor %}</span>
+        <span class="tags">{% if p.channel_label %}<span class="uidtag channel">{{ p.channel_label }}</span>{% endif %}{% if p.intel_label %}<span class="uidtag {{ p.intel_flag }}">{{ p.intel_label }}</span>{% endif %}<span class="uidtag">{{ p.idle }} d</span></span></div>
+      {% endfor %}
+    {% else %}<p class="empty">Keine laufenden Verfahren.</p>{% endif %}
+  </section>
+
+</div>
+{% endblock %}
+{% block script %}
+<script>
+(function () {
+  var g = "{{ generated_at }}";
+  if (!g) return;
+  var t = Date.parse(g.replace(" ", "T"));
+  if (!isNaN(t) && (Date.now() - t) > 48 * 3600 * 1000) {
+    document.getElementById("stale-banner").style.display = "block";
+  }
+})();
+</script>
+{% endblock %}

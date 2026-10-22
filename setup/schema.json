@@ -1,0 +1,329 @@
+{
+ "product": "xlrte-star",
+ "product_label": {
+  "de": "STAR · Bewerbungs-Cockpit",
+  "en": "STAR · job-search cockpit"
+ },
+ "title": {
+  "de": "Willkommen bei STAR",
+  "en": "Welcome to STAR"
+ },
+ "intro": {
+  "de": "STAR hilft dir, dich auf wenige, wirklich passende Bewerbungen zu konzentrieren und jedes Gespräch gründlich vorzubereiten. Ein paar Fragen, dann ist dein Ordner eingerichtet.",
+  "en": "STAR helps you focus on a few applications that really fit and prepare every interview thoroughly. A few questions, then your folder is ready."
+ },
+ "minutes": 5,
+ "next_steps": {
+  "de": "Öffne <code>01_cockpit.html</code> im Browser. Mit deiner KI (z. B. <code>claude</code> in diesem Ordner) gehst du danach <code>ONBOARDING.md</code> durch: Lebenslauf rein, Bio-Bausteine bestätigen, erste Verfahren anlegen.",
+  "en": "Open <code>01_cockpit.html</code> in your browser. Then go through <code>ONBOARDING.md</code> with your AI (e.g. <code>claude</code> in this folder): add your CV, confirm your bio building blocks, create your first processes."
+ },
+ "steps": [
+  {
+   "id": "about",
+   "title": {
+    "de": "Über dich",
+    "en": "About you"
+   },
+   "intro": {
+    "de": "Nur für deine eigenen Seiten. Ein Pseudonym genügt.",
+    "en": "Only for your own pages. A pseudonym is fine."
+   },
+   "fields": [
+    {
+     "key": "name",
+     "label": {
+      "de": "Name oder Pseudonym",
+      "en": "Name or pseudonym"
+     },
+     "type": "text",
+     "required": true,
+     "placeholder": {
+      "de": "Vorname Nachname",
+      "en": "First Last"
+     }
+    },
+    {
+     "key": "brand_name",
+     "label": {
+      "de": "Name deines Cockpits",
+      "en": "Name of your cockpit"
+     },
+     "type": "text",
+     "default": "STAR",
+     "help": {
+      "de": "Steht oben auf jeder Seite.",
+      "en": "Shown at the top of every page."
+     }
+    },
+    {
+     "key": "language",
+     "label": {
+      "de": "Sprache der Unterlagen (Briefings, Cockpits)",
+      "en": "Language of documents (briefings, cockpits)"
+     },
+     "type": "select",
+     "default": "de",
+     "options": [
+      {
+       "value": "de",
+       "label": {
+        "de": "Deutsch",
+        "en": "German"
+       }
+      },
+      {
+       "value": "en",
+       "label": {
+        "de": "Englisch",
+        "en": "English"
+       }
+      },
+      {
+       "value": "both",
+       "label": {
+        "de": "Beides",
+        "en": "Both"
+       }
+      }
+     ]
+    },
+    {
+     "key": "current_role",
+     "label": {
+      "de": "Aktuelle oder letzte Rolle",
+      "en": "Current or last role"
+     },
+     "type": "text",
+     "placeholder": {
+      "de": "z. B. Teamleitung Data & Analytics",
+      "en": "e.g. Team lead data & analytics"
+     }
+    }
+   ]
+  },
+  {
+   "id": "goals",
+   "title": {
+    "de": "Wonach suchst du?",
+    "en": "What are you looking for?"
+   },
+   "intro": {
+    "de": "Weniger, aber bessere Bewerbungen. Diese Angaben steuern Fit-Bewertung und Recherche.",
+    "en": "Fewer, better applications. These answers drive fit scoring and research."
+   },
+   "fields": [
+    {
+     "key": "goal_label",
+     "label": {
+      "de": "Deine Zielmarke",
+      "en": "Your goal"
+     },
+     "type": "text",
+     "placeholder": {
+      "de": "z. B. Vertrag unterschrieben",
+      "en": "e.g. contract signed"
+     },
+     "help": {
+      "de": "Steht im Cockpit mit den verbleibenden Tagen. Leer lassen geht auch.",
+      "en": "Shown in the cockpit with the days left. You can leave it empty."
+     }
+    },
+    {
+     "key": "goal_date",
+     "label": {
+      "de": "Bis wann?",
+      "en": "By when?"
+     },
+     "type": "date"
+    },
+    {
+     "key": "target_roles",
+     "label": {
+      "de": "Zielrollen",
+      "en": "Target roles"
+     },
+     "type": "lines",
+     "required": true,
+     "placeholder": {
+      "de": "Head of Data\nTeamleitung KI\nIT-Leitung",
+      "en": "Head of Data\nAI team lead\nHead of IT"
+     },
+     "help": {
+      "de": "Eine pro Zeile.",
+      "en": "One per line."
+     }
+    },
+    {
+     "key": "industries",
+     "label": {
+      "de": "Branchen, die dich reizen",
+      "en": "Industries you find attractive"
+     },
+     "type": "lines",
+     "placeholder": {
+      "de": "Logistik\nIndustrie\nÖffentlicher Sektor",
+      "en": "Logistics\nManufacturing\nPublic sector"
+     }
+    },
+    {
+     "key": "locations",
+     "label": {
+      "de": "Orte",
+      "en": "Locations"
+     },
+     "type": "lines",
+     "placeholder": {
+      "de": "Hamburg\nRemote",
+      "en": "Berlin\nRemote"
+     }
+    },
+    {
+     "key": "work_mode",
+     "label": {
+      "de": "Arbeitsmodell",
+      "en": "Work mode"
+     },
+     "type": "select",
+     "default": "hybrid",
+     "options": [
+      {
+       "value": "onsite",
+       "label": {
+        "de": "Vor Ort",
+        "en": "On site"
+       }
+      },
+      {
+       "value": "hybrid",
+       "label": {
+        "de": "Hybrid",
+        "en": "Hybrid"
+       }
+      },
+      {
+       "value": "remote",
+       "label": {
+        "de": "Remote",
+        "en": "Remote"
+       }
+      },
+      {
+       "value": "any",
+       "label": {
+        "de": "Egal",
+        "en": "Any"
+       }
+      }
+     ]
+    },
+    {
+     "key": "salary_floor",
+     "label": {
+      "de": "Gehalts-Untergrenze (brutto/Jahr, optional)",
+      "en": "Salary floor (gross per year, optional)"
+     },
+     "type": "number",
+     "help": {
+      "de": "Bleibt lokal. Dient nur dazu, unpassende Stellen früh auszusortieren.",
+      "en": "Stays local. Only used to filter out unsuitable roles early."
+     }
+    },
+    {
+     "key": "salary_target",
+     "label": {
+      "de": "Zielgehalt (brutto/Jahr, optional)",
+      "en": "Target salary (gross per year, optional)"
+     },
+     "type": "number",
+     "help": {
+      "de": "Untergrenze und Ziel bilden dein Zielband für Fit-Bewertung und Gesprächsvorbereitung. Bleibt lokal.",
+      "en": "Floor and target form your band for fit scoring and interview prep. Stays local."
+     }
+    },
+    {
+     "key": "weekly_budget",
+     "label": {
+      "de": "Neue Bewerbungen pro Woche (höchstens)",
+      "en": "New applications per week (maximum)"
+     },
+     "type": "number",
+     "default": 3,
+     "help": {
+      "de": "STAR erinnert dich: lieber gründlich als viel.",
+      "en": "STAR reminds you: thorough beats many."
+     }
+    },
+    {
+     "key": "available_from",
+     "label": {
+      "de": "Verfügbar ab",
+      "en": "Available from"
+     },
+     "type": "date"
+    }
+   ]
+  },
+  {
+   "id": "workflow",
+   "title": {
+    "de": "Arbeitsweise",
+    "en": "How you work"
+   },
+   "intro": {
+    "de": "Wie du Gespräche festhältst und ob du mit Beispieldaten starten willst.",
+    "en": "How you record conversations and whether you want to start with sample data."
+   },
+   "fields": [
+    {
+     "key": "notes_hint",
+     "label": {
+      "de": "Wie hältst du Gespräche fest?",
+      "en": "How do you record conversations?"
+     },
+     "type": "select",
+     "default": "markdown",
+     "options": [
+      {
+       "value": "markdown",
+       "label": {
+        "de": "Eigene Notizen / Gedankenprotokoll (Markdown oder Text)",
+        "en": "Own notes / memory log (Markdown or text)"
+       }
+      },
+      {
+       "value": "docs",
+       "label": {
+        "de": "Mitschriften in Word/Docs (vorher als Text exportieren)",
+        "en": "Notes in Word/Docs (export as text first)"
+       }
+      },
+      {
+       "value": "none",
+       "label": {
+        "de": "Noch gar nicht",
+        "en": "Not yet"
+       }
+      }
+     ],
+     "help": {
+      "de": "Ablage je Verfahren in „30 Verlauf“. STAR liest .md und .txt.",
+      "en": "Stored per process in “30 Verlauf”. STAR reads .md and .txt."
+     }
+    },
+    {
+     "key": "demo",
+     "label": {
+      "de": "Mit Beispieldaten starten (fiktive Person „Alex Muster“, 40 Verfahren)",
+      "en": "Start with sample data (fictional person “Alex Muster”, 40 processes)"
+     },
+     "type": "checkbox",
+     "default": true,
+     "help": {
+      "de": "Zum Ausprobieren. Später mit ./star kit_demo --remove und python3 demo/load_demo.py --remove wieder entfernen.",
+      "en": "To try it out. Remove later with ./star kit_demo --remove and python3 demo/load_demo.py --remove."
+     }
+    }
+   ]
+  }
+ ]
+}

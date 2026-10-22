@@ -1,0 +1,17 @@
+name: Fehler melden
+description: Etwas funktioniert nicht wie beschrieben
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Bitte keine persönlichen Daten, keine echten Firmen- oder Personennamen und keine API-Schlüssel einfügen."
+  - type: textarea
+    id: what
+    attributes: {label: Was ist passiert?, description: Schritte zum Nachstellen, gern mit den Demo-Daten}
+    validations: {required: true}
+  - type: textarea
+    id: expected
+    attributes: {label: Was hast du erwartet?}
+  - type: input
+    id: env
+    attributes: {label: "System", placeholder: "macOS 15 / Windows 11 / Ubuntu 24.04, Python 3.12"}
