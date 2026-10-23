@@ -23,7 +23,7 @@ import urllib.parse
 import webbrowser
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-DEFAULT_REPO = {"star": "xlrte/xlrte-star", "mastery": "xlrte/xlrte-mastery"}
+DEFAULT_REPO = {"star": "ylsop/xlrte-star", "mastery": "ylsop/xlrte-mastery"}
 
 
 def _read_json(path, default=None):
@@ -50,7 +50,7 @@ def repo_slug(prod):
             return m.group(1)
     except (OSError, subprocess.SubprocessError):
         pass
-    return DEFAULT_REPO.get(prod, "xlrte/xlrte-star")
+    return DEFAULT_REPO.get(prod, "ylsop/xlrte-star")
 
 
 def _system_name():

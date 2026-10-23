@@ -1,6 +1,6 @@
 # STAR · weniger Bewerbungen, bessere Gespräche
 
-[English](README.en.md)
+[English](README.en.md) · Teil von [ylsop](https://github.com/ylsop): *why slop?* Werkzeuge für alle, die lieber gründlich als viel machen.
 
 **STAR ist ein lokales Bewerbungs-Cockpit mit KI-Unterstützung.** Es hilft dir, dich auf wenige, wirklich passende Stellen
 zu konzentrieren und jedes Gespräch gründlich vorzubereiten: Pipeline, stufengesteuerte Recherche, Briefing und ein
@@ -29,7 +29,7 @@ Voraussetzung: Python 3.9 oder neuer (macOS, Windows, Linux). Beim ersten Start 
 `.venv` an und installiert drei Pakete (Jinja2, requests, Beautiful Soup); danach läuft alles offline.
 
 ```bash
-git clone https://github.com/xlrte/xlrte-star.git
+git clone https://github.com/ylsop/xlrte-star.git
 cd xlrte-star
 ./star                     # Windows: star.cmd
 ```
