@@ -16,7 +16,7 @@ Effort: **30 minutes setup**, then **10–15 minutes a day**, and three short ch
 1. Install Python 3.9 or newer: <https://www.python.org/downloads/> (Mac: often already there, `python3 --version`).
 2. Accept the GitHub invitation (email or <https://github.com/notifications>).
 3. Get the repository: green **Code → Download ZIP** button, unzip. Or with Git:
-   `git clone https://github.com/ylsop/xlrte-star.git`
+   `git clone https://github.com/yslop/xlrte-star.git`
 4. Start in the folder: Mac/Linux `./star`, Windows double-click `star.cmd`.
 5. The setup dialog opens in your browser. Pick Deutsch or English at the top right, keep "demo data" ticked.
 6. Connect your AI if you have a Claude, ChatGPT or Gemini subscription. It also works without AI.

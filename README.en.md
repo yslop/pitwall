@@ -1,6 +1,6 @@
 # STAR · fewer applications, better conversations
 
-[Deutsch](README.md) · Part of [ylsop](https://github.com/ylsop): *why slop?* Tools for people who would rather do it well than do a lot.
+[Deutsch](README.md) · Part of [yslop](https://github.com/yslop): *why slop?* Tools for people who would rather do it well than do a lot.
 
 **STAR is a local, AI-assisted job-search cockpit.** It helps you focus on a few roles that really fit and prepare every
 conversation thoroughly: pipeline, staged research, briefing and an interview cockpit with a conversation guide, a bio
@@ -27,7 +27,7 @@ Requires Python 3.9 or newer (macOS, Windows, Linux). On first start `./star` cr
 and installs three packages (Jinja2, requests, Beautiful Soup); after that everything runs offline.
 
 ```bash
-git clone https://github.com/ylsop/xlrte-star.git
+git clone https://github.com/yslop/xlrte-star.git
 cd xlrte-star
 ./star                     # Windows: star.cmd
 ```
