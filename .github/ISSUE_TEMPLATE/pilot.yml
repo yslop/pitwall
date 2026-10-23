@@ -1,15 +1,15 @@
-name: Pilot-Feedback · pilot feedback
-description: 2 Minuten · 2 minutes
+name: Pilot-Check-in · pilot check-in
+description: 2 Minuten, an Tag 1, 3 und 7 · 2 minutes, on day 1, 3 and 7
 labels: [pilot]
 body:
   - type: markdown
     attributes:
-      value: "Keine echten Namen, Firmen, Notizen oder Schlüssel. · No real names, companies, notes or keys."
+      value: "Tipp: `./star feedback` füllt *System* und *Nutzung* aus. Keine echten Namen, Firmen, Notizen oder Schlüssel. · Tip: `./star feedback` fills in *system* and *usage*. No real names, companies, notes or keys."
   - type: dropdown
-    id: phase
+    id: checkin
     attributes:
-      label: Pilot-Tag · pilot day
-      options: ["1 (Einrichtung · setup)", "2–3", "4–10", "11–14 (Abschluss · closing)"]
+      label: Check-in
+      options: ["1 · Tag 1, Einrichtung · day 1, setup", "2 · Tag 3 · day 3", "3 · Tag 7, Abschluss · day 7, closing"]
     validations: {required: true}
   - type: dropdown
     id: setup
@@ -22,11 +22,23 @@ body:
   - type: textarea
     id: friction
     attributes: {label: "Wo hast du gehakt? · Where did you get stuck?"}
+  - type: textarea
+    id: before_release
+    attributes: {label: "Was muss vor der Veröffentlichung besser werden? · What must improve before the public release?"}
   - type: dropdown
     id: recommend
     attributes:
-      label: Würdest du STAR weiterempfehlen? · Would you recommend STAR?
-      options: ["Ja · yes", "Vielleicht · maybe", "Nein · no"]
-  - type: input
+      label: "Wie wahrscheinlich empfiehlst du STAR weiter (0–10)? · How likely are you to recommend STAR (0–10)?"
+      options: ["10", "9", "8", "7", "6", "5", "4", "3", "2", "1", "0"]
+  - type: textarea
     id: system
-    attributes: {label: "System", placeholder: "macOS 15 / Windows 11 / Ubuntu 24.04, Python 3.12, KI/AI: …"}
+    attributes: {label: "System", description: "von ./star feedback · from ./star feedback"}
+  - type: textarea
+    id: usage
+    attributes: {label: "Nutzung · usage", description: "von ./star feedback · from ./star feedback"}
+  - type: checkboxes
+    id: credit
+    attributes:
+      label: Nennung · credit
+      options:
+        - label: "Ich möchte im CHANGELOG genannt werden (GitHub-Name) · Name me in the CHANGELOG (GitHub handle)"

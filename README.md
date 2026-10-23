@@ -29,7 +29,7 @@ Voraussetzung: Python 3.9 oder neuer (macOS, Windows, Linux). Beim ersten Start 
 `.venv` an und installiert drei Pakete (Jinja2, requests, Beautiful Soup); danach läuft alles offline.
 
 ```bash
-git clone https://github.com/token8/xlrte-star.git
+git clone https://github.com/xlrte/xlrte-star.git
 cd xlrte-star
 ./star                     # Windows: star.cmd
 ```

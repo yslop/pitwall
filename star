@@ -1,6 +1,7 @@
 #!/bin/sh
 # STAR: ./star                  erste Nutzung: lokale .venv + Einrichtungs-Dialog
 #       ./star setup            Einrichtung erneut öffnen
+#       ./star feedback         anonyme Pilot-Zusammenfassung (wird nicht gesendet)
 #       ./star <name> [Args]    startet _system/<name>.py, z. B. ./star render
 DIR="$(cd "$(dirname "$0")" && pwd)"
 SYS="$(command -v python3 || command -v python)"
@@ -15,6 +16,7 @@ if [ ! -x "$PY" ] || ! "$PY" -c "import jinja2" 2>/dev/null; then
       echo "Installation fehlgeschlagen. Manuell: $SYS -m pip install -r requirements.txt"; exit 1; }
   fi
 fi
+if [ "$1" = "feedback" ]; then shift; exec "$PY" "$DIR/setup/feedback.py" "$@"; fi
 if [ "$1" = "setup" ]; then shift; exec "$PY" "$DIR/setup/xlrte_setup.py" "$@"; fi
 if [ ! -f "$DIR/config/settings.json" ]; then
   echo "Erste Nutzung: die Einrichtung öffnet sich im Browser."

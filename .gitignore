@@ -26,3 +26,6 @@ __pycache__/
 
 # lokale Python-Umgebung
 .venv/
+
+# Pilot-Zusammenfassungen (lokal)
+feedback/

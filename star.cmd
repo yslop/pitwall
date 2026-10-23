@@ -10,6 +10,7 @@ echo Einmalig: Pakete in %DIR%.venv installieren (jinja2, requests, beautifulsou
 %SYS% -m venv "%DIR%.venv" || goto fail
 "%PY%" -m pip install -q -r "%DIR%requirements.txt" || goto fail
 :ready
+if /I "%~1"=="feedback" ("%PY%" "%DIR%setup\feedback.py" & exit /b)
 if /I "%~1"=="setup" (shift & "%PY%" "%DIR%setup\xlrte_setup.py" %* & exit /b)
 if not exist "%DIR%config\settings.json" (
   echo Erste Nutzung: die Einrichtung oeffnet sich im Browser.
