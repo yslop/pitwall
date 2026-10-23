@@ -34,6 +34,11 @@ STEPS = [
 
 
 def main():
+    for stream in (sys.stdout, sys.stderr):                         # Windows consoles default to cp1252
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except AttributeError:
+            pass
     for d in MKDIRS:
         os.makedirs(os.path.join(ROOT, d), exist_ok=True)
     for argv in STEPS:
