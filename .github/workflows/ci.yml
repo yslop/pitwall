@@ -10,7 +10,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]   # Windows: see ROADMAP (file-permission tests)
+        # private (pilot week): Linux only, to save Actions minutes; public: Linux + macOS (Windows: see ROADMAP)
+        os: ${{ github.event.repository.private && fromJSON('["ubuntu-latest"]') || fromJSON('["ubuntu-latest","macos-latest"]') }}
         python: ["3.9", "3.12"]
     steps:
       - uses: actions/checkout@v4
