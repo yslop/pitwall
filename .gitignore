@@ -23,3 +23,6 @@ _system/archive/
 __pycache__/
 .pytest_cache/
 .DS_Store
+
+# lokale Python-Umgebung
+.venv/

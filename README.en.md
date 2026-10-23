@@ -23,7 +23,8 @@ for exactly this role, a panic card and the best questions for the panel.
 
 ## Up and running in five minutes
 
-Requires Python 3.9 or newer (macOS, Windows, Linux).
+Requires Python 3.9 or newer (macOS, Windows, Linux). On first start `./star` creates a local `.venv` in the folder
+and installs three packages (Jinja2, requests, Beautiful Soup); after that everything runs offline.
 
 ```bash
 git clone https://github.com/token8/xlrte-star.git

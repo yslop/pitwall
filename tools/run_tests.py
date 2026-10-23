@@ -8,6 +8,7 @@ import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ENV = dict(os.environ, PYTHONUTF8="1", PYTHONIOENCODING="utf-8")
 MKDIRS = []
 STEPS = [
  [
@@ -38,7 +39,14 @@ def main():
     for argv in STEPS:
         argv = [sys.executable if a == "python3" else a for a in argv]
         print("$", " ".join(argv[:6]) + (" …" if len(argv) > 6 else ""), flush=True)
-        if subprocess.call(argv, cwd=ROOT) != 0:
+        proc = subprocess.run(argv, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=ENV)
+        out = proc.stdout.decode("utf-8", "replace")
+        print(out, flush=True)
+        if proc.returncode != 0:
+            if os.environ.get("GITHUB_ACTIONS"):                       # show the failure in the PR, not only in the raw log
+                tail = "\n".join(out.strip().splitlines()[-60:])
+                tail = tail.replace("%", "%25").replace("\r", "").replace("\n", "%0A")
+                print("::error title=%s::%s" % (" ".join(argv[1:4]).replace(":", " "), tail), flush=True)
             return 1
     return 0
 

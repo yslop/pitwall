@@ -34,7 +34,7 @@ anderen helfen.
 
 ## Stil
 
-- Python ≥ 3.9, nur Standardbibliothek in der Engine. Neue Abhängigkeiten nur nach Rücksprache.
+- Python ≥ 3.9; zur Laufzeit nur die Pakete aus `requirements.txt` (Jinja2, requests, Beautiful Soup). Neue Abhängigkeiten nur nach Rücksprache.
 - Deutsch in Oberfläche und Dokumentation, Englisch in Code-Bezeichnern ist in Ordnung.
 - Kurze Funktionen, sprechende Namen, ein Test je Fehlerpfad.
 

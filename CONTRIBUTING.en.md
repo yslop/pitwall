@@ -12,5 +12,5 @@ Three non-negotiable rules:
 2. **No third-party protected content.** No text from books, course material, official exam questions or paid sources.
 3. **Local first.** New network calls need a reason in the PR and must respect "local only".
 
-Python ≥ 3.9, standard library in the engine. German and English UI text are both welcome; new UI strings need an entry in
+Python ≥ 3.9; runtime dependencies only those in `requirements.txt` (Jinja2, requests, Beautiful Soup). German and English UI text are both welcome; new UI strings need an entry in
 the English catalogue (`i18n_en.json`). By contributing you agree that your work is published under the project licence.

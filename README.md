@@ -25,7 +25,8 @@ Gesprächs-Cockpit mit Leitfaden, Bio für genau diese Rolle, Panikkarte und den
 
 ## In fünf Minuten startklar
 
-Voraussetzung: Python 3.9 oder neuer (macOS, Windows, Linux).
+Voraussetzung: Python 3.9 oder neuer (macOS, Windows, Linux). Beim ersten Start legt `./star` im Ordner eine lokale
+`.venv` an und installiert drei Pakete (Jinja2, requests, Beautiful Soup); danach läuft alles offline.
 
 ```bash
 git clone https://github.com/token8/xlrte-star.git
