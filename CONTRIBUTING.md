@@ -1,6 +1,6 @@
-# Mitmachen bei STAR
+# Mitmachen bei Pitwall
 
-Danke, dass du STAR besser machen willst. Dieses Projekt glaubt an offenes Wissen: Was dir geholfen hat, soll auch
+Danke, dass du Pitwall besser machen willst. Dieses Projekt glaubt an offenes Wissen: Was dir geholfen hat, soll auch
 anderen helfen.
 
 ## Was besonders willkommen ist
@@ -40,6 +40,6 @@ anderen helfen.
 
 ## Wie Beiträge in Releases kommen
 
-STAR wird von XLRTE gepflegt. Beiträge werden im öffentlichen Repository geprüft und gemergt und fließen mit dem
+Pitwall wird von XLRTE gepflegt. Beiträge werden im öffentlichen Repository geprüft und gemergt und fließen mit dem
 nächsten Release ein. Wer beiträgt, steht im CHANGELOG. Mit deinem Beitrag stimmst du zu, dass er unter der Lizenz des
 Projekts veröffentlicht wird.

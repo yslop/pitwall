@@ -10,7 +10,7 @@ import os
 HERE = os.path.dirname(os.path.abspath(__file__))
 DEFAULTS = {
     "name": "Bewerber:in",
-    "brand_name": "STAR",
+    "brand_name": "Pitwall",
     "photo": "",
     "exit_file": "",
     "exit_summary": {"de": "", "en": ""},

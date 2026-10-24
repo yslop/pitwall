@@ -1,16 +1,16 @@
 {
  "product": "xlrte-star",
  "product_label": {
-  "de": "STAR · Bewerbungs-Cockpit",
-  "en": "STAR · job-search cockpit"
+  "de": "Pitwall · Bewerbungs-Cockpit",
+  "en": "Pitwall · job-search cockpit"
  },
  "title": {
-  "de": "Willkommen bei STAR",
-  "en": "Welcome to STAR"
+  "de": "Willkommen bei Pitwall",
+  "en": "Welcome to Pitwall"
  },
  "intro": {
-  "de": "STAR hilft dir, dich auf wenige, wirklich passende Bewerbungen zu konzentrieren und jedes Gespräch gründlich vorzubereiten. Ein paar Fragen, dann ist dein Ordner eingerichtet.",
-  "en": "STAR helps you focus on a few applications that really fit and prepare every interview thoroughly. A few questions, then your folder is ready."
+  "de": "Pitwall hilft dir, dich auf wenige, wirklich passende Bewerbungen zu konzentrieren und jedes Gespräch gründlich vorzubereiten. Ein paar Fragen, dann ist dein Ordner eingerichtet.",
+  "en": "Pitwall helps you focus on a few applications that really fit and prepare every interview thoroughly. A few questions, then your folder is ready."
  },
  "minutes": 5,
  "next_steps": {
@@ -49,7 +49,7 @@
       "en": "Name of your cockpit"
      },
      "type": "text",
-     "default": "STAR",
+     "default": "Pitwall",
      "help": {
       "de": "Steht oben auf jeder Seite.",
       "en": "Shown at the top of every page."
@@ -249,8 +249,8 @@
      "type": "number",
      "default": 3,
      "help": {
-      "de": "STAR erinnert dich: lieber gründlich als viel.",
-      "en": "STAR reminds you: thorough beats many."
+      "de": "Pitwall erinnert dich: lieber gründlich als viel.",
+      "en": "Pitwall reminds you: thorough beats many."
      }
     },
     {
@@ -306,8 +306,8 @@
       }
      ],
      "help": {
-      "de": "Ablage je Verfahren in „30 Verlauf“. STAR liest .md und .txt.",
-      "en": "Stored per process in “30 Verlauf”. STAR reads .md and .txt."
+      "de": "Ablage je Verfahren in „30 Verlauf“. Pitwall liest .md und .txt.",
+      "en": "Stored per process in “30 Verlauf”. Pitwall reads .md and .txt."
      }
     },
     {
@@ -319,8 +319,8 @@
      "type": "checkbox",
      "default": true,
      "help": {
-      "de": "Zum Ausprobieren. Später mit ./star kit_demo --remove und python3 demo/load_demo.py --remove wieder entfernen.",
-      "en": "To try it out. Remove later with ./star kit_demo --remove and python3 demo/load_demo.py --remove."
+      "de": "Zum Ausprobieren. Später mit ./pitwall kit_demo --remove und python3 demo/load_demo.py --remove wieder entfernen.",
+      "en": "To try it out. Remove later with ./pitwall kit_demo --remove and python3 demo/load_demo.py --remove."
      }
     }
    ]

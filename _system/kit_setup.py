@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Install the pilot kit for one customer: profile, empty pipeline, example files, first render. Never overwrites an existing file.
 
-    python3 _system/kit_setup.py --name "Erika Muster" [--brand STAR] [--today YYYY-MM-DD]
+    python3 _system/kit_setup.py --name "Erika Muster" [--brand Pitwall] [--today YYYY-MM-DD]
 """
 import argparse
 import csv
@@ -15,13 +15,13 @@ from datetime import date
 import kit_run
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-AGENT_MD = """# STAR Pilot
+AGENT_MD = """# Pitwall Pilot
 
 Du bist der Assistent für die Bewerbungsvorbereitung in diesem Ordner.
 
 1. Lies zuerst `_system/RUNBOOK.md`. Beim ersten Mal führe `ONBOARDING.md` Schritt für Schritt mit mir aus.
 2. Erfinde keine Fakten. Die Bio entsteht nur aus `00 references/Bio_Bausteine.json`.
-3. Befehle startest du mit `./star <name> [Argumente]` (Windows PowerShell: `.\\star <name> [Argumente]`), zum Beispiel `./star intel_queue --json`.
+3. Befehle startest du mit `./pitwall <name> [Argumente]` (Windows PowerShell: `.\\pitwall <name> [Argumente]`), zum Beispiel `./pitwall intel_queue --json`.
 4. Recherchiere mit öffentlichen Quellen und nenne sie; ohne Websuche im Agenten sage das und frage mich.
 5. Sende nichts und lösche nichts.
 """
@@ -30,7 +30,7 @@ HEADER = ["uid", "company", "role", "lane", "stage", "outcome", "applied", "last
           "location", "contacts", "folder_id", "next_action", "due", "note", "ts_confidence", "ts_fit_score"]
 
 
-def install(system_dir, name, brand="STAR", demo=False, today=None):
+def install(system_dir, name, brand="Pitwall", demo=False, today=None):
     system_dir = os.path.abspath(system_dir)
     base = os.path.dirname(system_dir)
     created, kept = [], []
@@ -80,7 +80,7 @@ def render(system_dir, today):
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Install the pilot kit for one customer.")
     ap.add_argument("--name", required=True)
-    ap.add_argument("--brand", default="STAR")
+    ap.add_argument("--brand", default="Pitwall")
     ap.add_argument("--no-demo", action="store_true", help="do not add the two fictional demo processes")
     ap.add_argument("--today", default=date.today().isoformat())
     a = ap.parse_args(argv)

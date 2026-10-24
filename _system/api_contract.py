@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Contracts for the external APIs STAR depends on, and a daily live smoke test against them.
+"""Contracts for the external APIs Pitwall depends on, and a daily live smoke test against them.
 
     python3 _system/api_contract.py --smoke     # 1 TypeSafe call (3 tiny questions) + 1 BA request
     python3 _system/api_contract.py --show      # print the last result

@@ -3,3 +3,4 @@ demo/**  phone  # fictional demo data, no real numbers expected; remove if it ev
 _system/tests/test_render.py  phone  # fictional test number next to an example.org address
 _system/tests/test_intel_docs.py  email  # fictional address in a lint test case
 _system/tests/test_drafts.py  phone  # fictional test number in a length-lint case
+docs/media/*.gif  too_large  # Hero-GIFs nur aus erfundenen Demo-Daten (Alex Muster / Sam Beispiel), Einzelbilder vor dem Einbau geprüft

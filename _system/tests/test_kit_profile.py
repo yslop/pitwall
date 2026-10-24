@@ -6,7 +6,7 @@ import kit_profile as K
 
 def test_defaults_without_a_file(tmp_path):
     p = K.load_profile(str(tmp_path))
-    assert p["name"] == "Bewerber:in" and p["brand_name"] == "STAR" and p["photo"] == "" and p["exit_file"] == ""
+    assert p["name"] == "Bewerber:in" and p["brand_name"] == "Pitwall" and p["photo"] == "" and p["exit_file"] == ""
     assert p["exit_summary"] == {"de": "", "en": ""} and p["proof_examples"] == []
 
 
@@ -24,7 +24,7 @@ def test_broken_or_wrongly_typed_files_fall_back_to_defaults(tmp_path):
     for text in ("{kaputt", "[]", "null", '{"name": 5, "brand_name": "", "exit_summary": "x", "proof_examples": "a"}'):
         (tmp_path / "profile.json").write_text(text, encoding="utf-8")
         p = K.load_profile(str(tmp_path))
-        assert p["name"] == "Bewerber:in" and p["brand_name"] == "STAR" and p["exit_summary"] == {"de": "", "en": ""} and p["proof_examples"] == []
+        assert p["name"] == "Bewerber:in" and p["brand_name"] == "Pitwall" and p["exit_summary"] == {"de": "", "en": ""} and p["proof_examples"] == []
 
 
 def test_results_are_independent_copies(tmp_path):

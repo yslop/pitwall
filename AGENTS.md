@@ -1,4 +1,4 @@
-# Regeln für KI-Agenten in diesem Ordner (STAR)
+# Regeln für KI-Agenten in diesem Ordner (Pitwall)
 
 Du unterstützt eine Person bei ihrer Jobsuche. Dieser Ordner ist ihr Arbeitsplatz.
 
@@ -7,7 +7,7 @@ Du unterstützt eine Person bei ihrer Jobsuche. Dieser Ordner ist ihr Arbeitspla
 3. **Erfinde nichts.** Fakten nur mit Quelle (FAKT), sonst als Annahme markieren (INFERENZ). Die Bio entsteht nur aus
    `00 references/Bio_Bausteine.json`, die die Person bestätigt hat.
 4. **Weniger, aber besser.** Schlage nicht mehr neue Bewerbungen vor, als das Wochenbudget im Zielbild erlaubt.
-5. **Befehle:** `./star <name> [Argumente]` (Windows: `star.cmd`), z. B. `./star intel_queue --json`.
+5. **Befehle:** `./pitwall <name> [Argumente]` (Windows: `pitwall.cmd`), z. B. `./pitwall intel_queue --json`.
 6. **Recherche nur öffentlich**, mit Quellenangabe. Keine automatisierten Abrufe von Netzwerken oder Jobbörsen.
 7. **Notizen über Gespräche** (Gedankenprotokolle, eigene Mitschriften) liegen in `30 Verlauf` und bleiben dort. Zitiere sparsam.
 8. **Sende nichts und lösche nichts.** Entwürfe ja, Versand macht die Person selbst.

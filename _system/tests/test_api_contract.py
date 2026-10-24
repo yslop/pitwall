@@ -41,7 +41,7 @@ def fake_urlopen(seen, respond):
 PROFILE = {"capabilities": [{"name": "Data Strategy", "level": 3, "evidence": "CV"},
                             {"name": "AI Governance", "level": 2, "evidence": ""}]}
 
-# (name, module, call) — every place in STAR that talks to TypeSafe
+# (name, module, call) — every place in Pitwall that talks to TypeSafe
 CALL_SITES = [
     ("classify", typesafe_classify, lambda: typesafe_classify.classify_email("Einladung", "Gespräch am Dienstag")),
     ("fit_score", fit_score, lambda: fit_score.score_opportunity("Head of Data", "Muster AG", "Aufbau eines Data Teams")),

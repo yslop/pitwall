@@ -1,4 +1,4 @@
-# Laufzeit / runtime. ./star (star.cmd) installiert das beim ersten Start in eine lokale .venv in diesem Ordner.
+# Laufzeit / runtime. ./pitwall (pitwall.cmd) installiert das beim ersten Start in eine lokale .venv in diesem Ordner.
 jinja2>=3.1          # Cockpit und Vorbereitungsseiten / cockpit and prep pages
 requests>=2.31       # optional: Stellensuche, Arbeitgeber-Infos / optional: job discovery
 beautifulsoup4>=4.12 # optional: Stellensuche / optional: job discovery

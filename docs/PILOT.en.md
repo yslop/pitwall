@@ -1,6 +1,6 @@
-# Pilot: STAR in one week
+# Pilot: Pitwall in one week
 
-Thank you for joining. This week STAR is **invite-only**. Afterwards it goes public for everyone, with your
+Thank you for joining. This week Pitwall is **invite-only**. Afterwards it goes public for everyone, with your
 improvements in it. Please do not share the link until then.
 
 Effort: **30 minutes setup**, then **10–15 minutes a day**, and three short check-ins.
@@ -16,8 +16,8 @@ Effort: **30 minutes setup**, then **10–15 minutes a day**, and three short ch
 1. Install Python 3.9 or newer: <https://www.python.org/downloads/> (Mac: often already there, `python3 --version`).
 2. Accept the GitHub invitation (email or <https://github.com/notifications>).
 3. Get the repository: green **Code → Download ZIP** button, unzip. Or with Git:
-   `git clone https://github.com/yslop/xlrte-star.git`
-4. Start in the folder: Mac/Linux `./star`, Windows double-click `star.cmd`.
+   `git clone https://github.com/yslop/pitwall.git`
+4. Start in the folder: Mac/Linux `./pitwall`, Windows double-click `pitwall.cmd`.
 5. The setup dialog opens in your browser. Pick Deutsch or English at the top right, keep "demo data" ticked.
 6. Connect your AI if you have a Claude, ChatGPT or Gemini subscription. It also works without AI.
 
@@ -25,14 +25,14 @@ Effort: **30 minutes setup**, then **10–15 minutes a day**, and three short ch
 
 | Day | What you do | Feedback |
 |---|---|---|
-| 1 | Set up, click around with the demo data | **Check-in 1:** `./star feedback` |
+| 1 | Set up, click around with the demo data | **Check-in 1:** `./pitwall feedback` |
 | 2–3 | Remove the demo data (`python3 demo/load_demo.py --remove`), add two or three of your own processes | **Check-in 2** on day 3 |
 | 4–6 | Use it daily, note anything odd as an issue right away | Bugs and ideas any time |
 | 7 | Look back: what should be better before the public release? | **Check-in 3 (closing)** |
 
 ## How to give feedback
 
-`./star feedback` (Windows: `star.cmd feedback`) writes a short summary of counts and settings: version, system,
+`./pitwall feedback` (Windows: `pitwall.cmd feedback`) writes a short summary of counts and settings: version, system,
 language, type of AI connection, how many days you used it. **No names, companies, notes, questions or keys.** It is saved
 in `feedback/` and opens the pilot form on GitHub, already filled in. You read it, change it if you like, then submit.
 Nothing is sent automatically.

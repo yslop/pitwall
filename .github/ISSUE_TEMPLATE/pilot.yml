@@ -4,7 +4,7 @@ labels: [pilot]
 body:
   - type: markdown
     attributes:
-      value: "Tipp: `./star feedback` füllt *System* und *Nutzung* aus. Keine echten Namen, Firmen, Notizen oder Schlüssel. · Tip: `./star feedback` fills in *system* and *usage*. No real names, companies, notes or keys."
+      value: "Tipp: `./pitwall feedback` füllt *System* und *Nutzung* aus. Keine echten Namen, Firmen, Notizen oder Schlüssel. · Tip: `./pitwall feedback` fills in *system* and *usage*. No real names, companies, notes or keys."
   - type: dropdown
     id: checkin
     attributes:
@@ -28,14 +28,14 @@ body:
   - type: dropdown
     id: recommend
     attributes:
-      label: "Wie wahrscheinlich empfiehlst du STAR weiter (0–10)? · How likely are you to recommend STAR (0–10)?"
+      label: "Wie wahrscheinlich empfiehlst du Pitwall weiter (0–10)? · How likely are you to recommend Pitwall (0–10)?"
       options: ["10", "9", "8", "7", "6", "5", "4", "3", "2", "1", "0"]
   - type: textarea
     id: system
-    attributes: {label: "System", description: "von ./star feedback · from ./star feedback"}
+    attributes: {label: "System", description: "von ./pitwall feedback · from ./pitwall feedback"}
   - type: textarea
     id: usage
-    attributes: {label: "Nutzung · usage", description: "von ./star feedback · from ./star feedback"}
+    attributes: {label: "Nutzung · usage", description: "von ./pitwall feedback · from ./pitwall feedback"}
   - type: checkboxes
     id: credit
     attributes:

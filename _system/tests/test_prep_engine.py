@@ -345,7 +345,7 @@ def test_forbidden_phrases_from_the_bio_building_blocks_are_flagged(tmp_path):
 
 
 def test_conversation_templates_never_share_a_name_with_the_dashboard_templates():
-    # regression: 'cockpit.html' is the template of the STAR page 01_cockpit.html and was overwritten once by the conversation cockpit
+    # regression: 'cockpit.html' is the template of the Pitwall page 01_cockpit.html and was overwritten once by the conversation cockpit
     import re
     here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     prep = set(re.findall(r'"([\w]+\.html)"', open(os.path.join(here, "prep_engine.py"), encoding="utf-8").read())) & set(os.listdir(os.path.join(here, "templates")))

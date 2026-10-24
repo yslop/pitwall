@@ -22,7 +22,7 @@ DEMO_UIDS = ("9001", "9002")
 MARKER = ".star_demo"
 HEADER_FALLBACK = ["uid", "company", "role", "lane", "stage", "outcome", "applied", "last_event", "days_idle", "score", "boost", "salary_fit",
                    "location", "contacts", "folder_id", "next_action", "due", "note", "ts_confidence", "ts_fit_score"]
-NOTE = "DEMO: erfundene Beispieldaten. Entfernen mit ./star kit_demo --remove"
+NOTE = "DEMO: erfundene Beispieldaten. Entfernen mit ./pitwall kit_demo --remove"
 
 PROCESSES = [
     {"uid": "9001", "company": "Beispiel Maschinenbau AG", "role": "Head of Data", "stage": "Interviewing", "lane": "Data/AI Arch", "score": "72",
@@ -35,7 +35,7 @@ PROCESSES = [
 def _briefing(today):
     return """# Briefing — Beispiel Maschinenbau AG · Head of Data (Demo)
 
-**DEMO: Alle Inhalte sind erfunden und nur Anschauungsmaterial. Entfernen mit `./star kit_demo --remove`.**
+**DEMO: Alle Inhalte sind erfunden und nur Anschauungsmaterial. Entfernen mit `./pitwall kit_demo --remove`.**
 
 ## 1. Strategie und Finanzbild
 - FACT: Die fiktive Beispiel Maschinenbau AG setzte 2025 rund 420 Mio. € um und beschäftigt etwa 1.800 Mitarbeitende [1].
@@ -76,7 +76,7 @@ def _briefing(today):
 def _cheat_sheet(today):
     return """# Cheat Sheet — Beispiel Versicherung SE · Director IT Strategy (Demo)
 
-**DEMO: Alle Inhalte sind erfunden und nur Anschauungsmaterial. Entfernen mit `./star kit_demo --remove`.**
+**DEMO: Alle Inhalte sind erfunden und nur Anschauungsmaterial. Entfernen mit `./pitwall kit_demo --remove`.**
 
 ## Das Unternehmen in Zahlen
 - FACT: Die fiktive Beispiel Versicherung SE hat rund 2,1 Mio. Kunden und etwa 3.400 Mitarbeitende [1].

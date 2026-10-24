@@ -1,6 +1,6 @@
 # Changelog
 
-Alle wichtigen Änderungen an STAR. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Versionen nach
+Alle wichtigen Änderungen an Pitwall. Format nach [Keep a Changelog](https://keepachangelog.com/de/1.1.0/), Versionen nach
 [SemVer](https://semver.org/lang/de/).
 
 ## [0.1.0] – 2026-10-23

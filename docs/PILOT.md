@@ -1,6 +1,6 @@
-# Pilot: STAR in einer Woche
+# Pilot: Pitwall in einer Woche
 
-Danke, dass du dabei bist. STAR ist in dieser Woche **nur auf Einladung** sichtbar. Danach wird es mit euren
+Danke, dass du dabei bist. Pitwall ist in dieser Woche **nur auf Einladung** sichtbar. Danach wird es mit euren
 Verbesserungen für alle veröffentlicht. Bitte teile den Link bis dahin nicht weiter.
 
 Aufwand: **30 Minuten Einrichtung**, danach **10–15 Minuten pro Tag**, und dreimal ein kurzes Feedback.
@@ -16,8 +16,8 @@ Aufwand: **30 Minuten Einrichtung**, danach **10–15 Minuten pro Tag**, und dre
 1. Python 3.9 oder neuer installieren: <https://www.python.org/downloads/> (Mac: oft schon da, `python3 --version`).
 2. Die Einladung von GitHub annehmen (E-Mail oder <https://github.com/notifications>).
 3. Repository holen: grüner Knopf **Code → Download ZIP**, entpacken. Oder mit Git:
-   `git clone https://github.com/yslop/xlrte-star.git`
-4. Im Ordner starten: Mac/Linux `./star`, Windows Doppelklick auf `star.cmd`.
+   `git clone https://github.com/yslop/pitwall.git`
+4. Im Ordner starten: Mac/Linux `./pitwall`, Windows Doppelklick auf `pitwall.cmd`.
 5. Der Einrichtungs-Dialog öffnet sich im Browser. Oben rechts Deutsch oder English wählen, „Beispieldaten“ angehakt lassen.
 6. KI anbinden, wenn du ein Claude-, ChatGPT- oder Gemini-Abo hast. Ohne KI geht es auch.
 
@@ -25,14 +25,14 @@ Aufwand: **30 Minuten Einrichtung**, danach **10–15 Minuten pro Tag**, und dre
 
 | Tag | Was du tust | Feedback |
 |---|---|---|
-| 1 | Einrichten, mit Beispieldaten herumklicken | **Check-in 1:** `./star feedback` |
+| 1 | Einrichten, mit Beispieldaten herumklicken | **Check-in 1:** `./pitwall feedback` |
 | 2–3 | Beispieldaten entfernen (`python3 demo/load_demo.py --remove`), zwei bis drei eigene Verfahren anlegen | **Check-in 2** an Tag 3 |
 | 4–6 | Täglich nutzen, Auffälliges sofort als Issue notieren | Fehler und Ideen jederzeit |
 | 7 | Rückblick: Was soll vor der Veröffentlichung noch besser werden? | **Check-in 3 (Abschluss)** |
 
 ## So gibst du Feedback
 
-`./star feedback` (Windows: `star.cmd feedback`) erstellt eine kurze Zusammenfassung mit Zahlen und Einstellungen:
+`./pitwall feedback` (Windows: `pitwall.cmd feedback`) erstellt eine kurze Zusammenfassung mit Zahlen und Einstellungen:
 Version, System, Sprache, Art der KI-Anbindung, wie viele Tage du es genutzt hast. **Keine Namen, Firmen, Notizen,
 Fragen oder Schlüssel.** Sie wird in `feedback/` gespeichert und öffnet das Pilot-Formular auf GitHub, schon ausgefüllt.
 Du liest sie, änderst sie, wenn du willst, und schickst dann ab. Es wird nichts automatisch übertragen.

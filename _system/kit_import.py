@@ -208,7 +208,7 @@ def main(argv=None):
     for w in res["warnings"]:
         print("  Hinweis:", w)
     if not a.apply:
-        print("Zum Übernehmen: ./star kit_import %s --apply" % a.csv)
+        print("Zum Übernehmen: ./pitwall kit_import %s --apply" % a.csv)
         return 0
     subprocess.run(kit_run.script_cmd(HERE, "intel_index") + ["--data", "pipeline.csv"], cwd=HERE, capture_output=True, text=True)
     import kit_setup

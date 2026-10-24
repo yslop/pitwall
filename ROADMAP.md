@@ -1,4 +1,4 @@
-# Roadmap STAR
+# Roadmap Pitwall
 
 Stand: 0.1 (erste öffentliche Ausgabe). Prioritäten können sich nach Rückmeldungen aus der Community ändern.
 

@@ -16,8 +16,8 @@ def test_pdf_footer_and_logo_alt_use_the_brand():
 
 
 def test_pdf_brand_defaults_to_the_profile_brand(monkeypatch):
-    monkeypatch.setattr(intel_pdf, "load_profile", lambda d=None: {"brand_name": "STAR"})        # independent of a profile.json next to the engine
-    assert "STAR · Briefing" in intel_pdf.intel_html("# T", "briefing", "t", "s", logo="")
+    monkeypatch.setattr(intel_pdf, "load_profile", lambda d=None: {"brand_name": "Pitwall"})        # independent of a profile.json next to the engine
+    assert "Pitwall · Briefing" in intel_pdf.intel_html("# T", "briefing", "t", "s", logo="")
 
 
 def test_default_applicant_comes_from_the_profile(tmp_path, monkeypatch):
@@ -51,7 +51,7 @@ OWNER = {"name": "Testvorname Testnachname", "brand_name": "XLRTE", "photo": "",
          "exit_summary": {"de": "PE-getriebene Kostenrestrukturierung bei Etikettenwerk hat die Funktion konsolidiert — Transition sauber gemanagt.",
                           "en": "PE-driven restructuring at Etikettenwerk consolidated the function — transition managed cleanly."},
          "proof_examples": ["CUPRA/ATHENA", "EU-AI-Act-Crosswalk bei Etikettenwerk"]}
-EMPTY = {"name": "Bewerber:in", "brand_name": "STAR", "photo": "", "exit_file": "", "exit_summary": {"de": "", "en": ""}, "proof_examples": []}
+EMPTY = {"name": "Bewerber:in", "brand_name": "Pitwall", "photo": "", "exit_file": "", "exit_summary": {"de": "", "en": ""}, "proof_examples": []}
 TERMS = ("Testvorname", "Testnachname", "Etikettenwerk", "CUPRA", "ATHENA")
 
 

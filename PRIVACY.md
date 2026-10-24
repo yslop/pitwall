@@ -1,11 +1,11 @@
 # Datenschutz: Governance by Design
 
-STAR ist so gebaut, dass Datenschutz nicht von guten Vorsätzen abhängt, sondern von der Architektur.
+Pitwall ist so gebaut, dass Datenschutz nicht von guten Vorsätzen abhängt, sondern von der Architektur.
 
 | Prinzip | Umsetzung |
 |---|---|
 | Lokal zuerst | Alles Deterministische läuft in Python auf deinem Rechner. Ergebnisse sind Dateien in diesem Ordner. |
-| Kein Konto, keine Telemetrie | Es gibt keinen Server von STAR. Nichts wird gezählt oder gemeldet. |
+| Kein Konto, keine Telemetrie | Es gibt keinen Server von Pitwall. Nichts wird gezählt oder gemeldet. |
 | Deine KI, deine Entscheidung | Du wählst im Einrichtungs-Dialog Abo, eigenen Schlüssel, EU-Anbieter oder ein lokales Modell. |
 | Nur lokal | Ein Schalter sperrt jeden entfernten KI-Anbieter, im Dialog und im Code (`setup/ai.py`). |
 | Geheimnisse getrennt | API-Schlüssel stehen nur in `.env` (Dateirechte 600), nie in `config/settings.json`, nie im Log. |

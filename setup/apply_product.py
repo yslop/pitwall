@@ -1,4 +1,4 @@
-"""STAR: turn the setup answers into a working folder. Called by setup/xlrte_setup.py after saving; never overwrites your files."""
+"""Pitwall: turn the setup answers into a working folder. Called by setup/xlrte_setup.py after saving; never overwrites your files."""
 import datetime
 import json
 import os
@@ -14,7 +14,7 @@ def apply(root, settings):
     import kit_setup
     today = datetime.date.today().isoformat()
     msgs = []
-    res = kit_setup.install(system, a.get("name") or "Bewerber:in", a.get("brand_name") or "STAR", demo=bool(a.get("demo")), today=today)
+    res = kit_setup.install(system, a.get("name") or "Bewerber:in", a.get("brand_name") or "Pitwall", demo=bool(a.get("demo")), today=today)
     msgs.append("Ordner eingerichtet: %d neu, %d behalten" % (len(res["created"]), len(res["kept"])))
 
     prefs = {k: a.get(k) for k in ("goal_label", "goal_date", "language", "current_role", "target_roles", "industries", "locations", "work_mode", "salary_floor",
@@ -45,5 +45,5 @@ def apply(root, settings):
         r = subprocess.run([sys.executable, os.path.join(root, "demo", "load_demo.py")], cwd=root, capture_output=True, text=True)
         msgs.append((r.stdout.strip().splitlines() or ["Demo-Persona geladen"])[0])
     subprocess.run(kit_run.script_cmd(system, "intel_index") + ["--data", "pipeline.csv"], cwd=system, capture_output=True, text=True)
-    msgs.append("Seiten gerendert: 01_cockpit.html" if kit_setup.render(system, today) == 0 else "Rendern fehlgeschlagen: ./star render prüfen")
+    msgs.append("Seiten gerendert: 01_cockpit.html" if kit_setup.render(system, today) == 0 else "Rendern fehlgeschlagen: ./pitwall render prüfen")
     return msgs
