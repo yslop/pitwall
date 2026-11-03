@@ -1,6 +1,7 @@
 @echo off
 setlocal
 set "DIR=%~dp0"
+if exist "%DIR%runtime\python.exe" (set "PY=%DIR%runtime\python.exe" & goto ready)
 set "SYS=python"
 where py >nul 2>nul && set "SYS=py -3"
 set "PY=%DIR%.venv\Scripts\python.exe"
@@ -17,7 +18,7 @@ if not exist "%DIR%config\settings.json" (
   "%PY%" "%DIR%setup\xlrte_setup.py"
   if "%~1"=="" exit /b
 )
-if "%~1"=="" (echo Cockpit: %DIR%01_cockpit.html & exit /b)
+if "%~1"=="" (echo Cockpit: %DIR%01_cockpit.html & start "" "%DIR%01_cockpit.html" & exit /b)
 set "NAME=%~1"
 shift
 "%PY%" "%DIR%_system\%NAME%.py" %1 %2 %3 %4 %5 %6 %7 %8 %9

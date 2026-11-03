@@ -91,7 +91,7 @@ const T = () => UI[LANG];
 const L = v => v && typeof v === "object" && !Array.isArray(v) ? (v[LANG] || v.de || v.en || "") : (v == null ? "" : v);
 const PL = pid => LANG === "en" ? PROV_EN[pid] || P[pid].label : P[pid].label;
 const prev = B.settings || {};
-const state = { i: 0, answers: Object.assign({}, prev.answers || {}), ai: Object.assign({ provider: "none", model: "", base_url: "", key: "" }, prev.ai || {}),
+const state = { i: 0, answers: Object.assign({}, prev.answers || {}, prev.setup_completed ? { demo: false } : {}), ai: Object.assign({ provider: "none", model: "", base_url: "", key: "" }, prev.ai || {}),
   privacy: Object.assign({ local_only: false }, prev.privacy || {}), detect: null, test: null };
 const pages = [{ id: "welcome", tk: "welcome" }].concat(S.steps.map(s => Object.assign({ kind: "form" }, s)),
   [{ id: "ai", tk: "ai" }, { id: "privacy", tk: "privacy" }, { id: "summary", tk: "review" }, { id: "done", tk: "done" }]);

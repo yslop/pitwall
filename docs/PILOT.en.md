@@ -1,7 +1,7 @@
 # Pilot: Pitwall in one week
 
-Thank you for joining. This week Pitwall is **invite-only**. Afterwards it goes public for everyone, with your
-improvements in it. Please do not share the link until then.
+Thank you for testing. The first pilot week was invite-only; Pitwall is now open, and feedback is still the most valuable
+thing you can contribute. Feel free to share the link.
 
 Effort: **30 minutes setup**, then **10–15 minutes a day**, and three short check-ins.
 
@@ -13,13 +13,12 @@ Effort: **30 minutes setup**, then **10–15 minutes a day**, and three short ch
 
 ## Setup (Mac, Windows, Linux)
 
-1. Install Python 3.9 or newer: <https://www.python.org/downloads/> (Mac: often already there, `python3 --version`).
-2. Accept the GitHub invitation (email or <https://github.com/notifications>).
-3. Get the repository: green **Code → Download ZIP** button, unzip. Or with Git:
-   `git clone https://github.com/yslop/pitwall.git`
-4. Start in the folder: Mac/Linux `./pitwall`, Windows double-click `pitwall.cmd`.
-5. The setup dialog opens in your browser. Pick Deutsch or English at the top right, keep "demo data" ticked.
-6. Connect your AI if you have a Claude, ChatGPT or Gemini subscription. It also works without AI.
+1. **Easiest:** download the installer for your system from <https://github.com/yslop/pitwall/releases/latest>
+   (`.dmg` for Mac, `-setup.exe` for Windows) and run it. No Python needed.
+2. **Or with Python 3.9+:** green **Code → Download ZIP** button, unzip, or `git clone https://github.com/yslop/pitwall.git`.
+3. Start in the folder: Mac/Linux `./pitwall`, Windows double-click `pitwall.cmd`.
+4. The setup dialog opens in your browser. Pick Deutsch or English at the top right, keep "demo data" ticked.
+5. Connect your AI if you have a Claude, ChatGPT or Gemini subscription. It also works without AI.
 
 ## The pilot week
 
@@ -43,9 +42,8 @@ Nothing is sent automatically.
 
 ## What happens with your feedback
 
-Every evening of the pilot week the feedback is reviewed and sorted. Anything that blocks setup is fixed right away.
-After day 7 there is a summary in the pilot issue (anonymised), then version 0.2.0 and the public release. Contributors
-are named in the CHANGELOG if you wish.
+Feedback is reviewed and sorted regularly. Anything that blocks setup is fixed first. Contributors are named in the
+CHANGELOG if you wish.
 
 ## Your data
 

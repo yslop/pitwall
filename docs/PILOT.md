@@ -1,7 +1,7 @@
 # Pilot: Pitwall in einer Woche
 
-Danke, dass du dabei bist. Pitwall ist in dieser Woche **nur auf Einladung** sichtbar. Danach wird es mit euren
-Verbesserungen für alle veröffentlicht. Bitte teile den Link bis dahin nicht weiter.
+Danke, dass du mittestest. Die erste Pilotwoche lief nur auf Einladung; jetzt ist Pitwall offen, und Feedback ist
+weiterhin das Wertvollste, was du beitragen kannst. Teile den Link gern.
 
 Aufwand: **30 Minuten Einrichtung**, danach **10–15 Minuten pro Tag**, und dreimal ein kurzes Feedback.
 
@@ -13,13 +13,12 @@ Aufwand: **30 Minuten Einrichtung**, danach **10–15 Minuten pro Tag**, und dre
 
 ## Einrichtung (Mac, Windows, Linux)
 
-1. Python 3.9 oder neuer installieren: <https://www.python.org/downloads/> (Mac: oft schon da, `python3 --version`).
-2. Die Einladung von GitHub annehmen (E-Mail oder <https://github.com/notifications>).
-3. Repository holen: grüner Knopf **Code → Download ZIP**, entpacken. Oder mit Git:
-   `git clone https://github.com/yslop/pitwall.git`
-4. Im Ordner starten: Mac/Linux `./pitwall`, Windows Doppelklick auf `pitwall.cmd`.
-5. Der Einrichtungs-Dialog öffnet sich im Browser. Oben rechts Deutsch oder English wählen, „Beispieldaten“ angehakt lassen.
-6. KI anbinden, wenn du ein Claude-, ChatGPT- oder Gemini-Abo hast. Ohne KI geht es auch.
+1. **Am einfachsten:** den Installer für dein System unter <https://github.com/yslop/pitwall/releases/latest> laden
+   (`.dmg` für Mac, `-setup.exe` für Windows) und starten. Python brauchst du dafür nicht.
+2. **Oder mit Python 3.9+:** grüner Knopf **Code → Download ZIP**, entpacken, oder `git clone https://github.com/yslop/pitwall.git`.
+3. Im Ordner starten: Mac/Linux `./pitwall`, Windows Doppelklick auf `pitwall.cmd`.
+4. Der Einrichtungs-Dialog öffnet sich im Browser. Oben rechts Deutsch oder English wählen, „Beispieldaten“ angehakt lassen.
+5. KI anbinden, wenn du ein Claude-, ChatGPT- oder Gemini-Abo hast. Ohne KI geht es auch.
 
 ## Die Pilotwoche
 
@@ -43,9 +42,8 @@ Du liest sie, änderst sie, wenn du willst, und schickst dann ab. Es wird nichts
 
 ## Was mit deinem Feedback passiert
 
-Jeden Abend der Pilotwoche wird das Feedback gesichtet und sortiert. Was die Einrichtung blockiert, wird sofort behoben.
-Nach Tag 7 folgt eine Auswertung im Pilot-Issue mit allen Antworten (anonym zusammengefasst), dann Version 0.2.0 und die
-Veröffentlichung. Wer etwas beigetragen hat, steht im CHANGELOG, wenn du das möchtest.
+Feedback wird regelmäßig gesichtet und sortiert. Was die Einrichtung blockiert, wird zuerst behoben. Wer etwas
+beigetragen hat, steht im CHANGELOG, wenn du das möchtest.
 
 ## Deine Daten
 

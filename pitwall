@@ -1,19 +1,23 @@
 #!/bin/sh
-# Pitwall: ./pitwall                  erste Nutzung: lokale .venv + Einrichtungs-Dialog
+# Pitwall: ./pitwall                  erste Nutzung: Einrichtungs-Dialog; danach öffnet es das Cockpit
 #       ./pitwall setup            Einrichtung erneut öffnen
 #       ./pitwall feedback         anonyme Pilot-Zusammenfassung (wird nicht gesendet)
 #       ./pitwall <name> [Args]    startet _system/<name>.py, z. B. ./pitwall render
 DIR="$(cd "$(dirname "$0")" && pwd)"
-SYS="$(command -v python3 || command -v python)"
-[ -z "$SYS" ] && { echo "Python 3.9+ fehlt / missing: https://www.python.org/downloads/"; exit 1; }
-PY="$DIR/.venv/bin/python"
-if [ ! -x "$PY" ] || ! "$PY" -c "import jinja2" 2>/dev/null; then
-  if "$SYS" -c "import jinja2" 2>/dev/null; then
-    PY="$SYS"
-  else
-    echo "Einmalig: Pakete in $DIR/.venv installieren (jinja2, requests, beautifulsoup4) …"
-    "$SYS" -m venv "$DIR/.venv" && "$DIR/.venv/bin/python" -m pip install -q -r "$DIR/requirements.txt" || {
-      echo "Installation fehlgeschlagen. Manuell: $SYS -m pip install -r requirements.txt"; exit 1; }
+if [ -x "$DIR/runtime/bin/python3" ]; then     # installer build: its own Python, nothing to install
+  PY="$DIR/runtime/bin/python3"
+else
+  SYS="$(command -v python3 || command -v python)"
+  [ -z "$SYS" ] && { echo "Python 3.9+ fehlt / missing: https://www.python.org/downloads/"; exit 1; }
+  PY="$DIR/.venv/bin/python"
+  if [ ! -x "$PY" ] || ! "$PY" -c "import jinja2" 2>/dev/null; then
+    if "$SYS" -c "import jinja2" 2>/dev/null; then
+      PY="$SYS"
+    else
+      echo "Einmalig: Pakete in $DIR/.venv installieren (jinja2, requests, beautifulsoup4) …"
+      "$SYS" -m venv "$DIR/.venv" && "$DIR/.venv/bin/python" -m pip install -q -r "$DIR/requirements.txt" || {
+        echo "Installation fehlgeschlagen. Manuell: $SYS -m pip install -r requirements.txt"; exit 1; }
+    fi
   fi
 fi
 if [ "$1" = "feedback" ]; then shift; exec "$PY" "$DIR/setup/feedback.py" "$@"; fi
@@ -23,6 +27,10 @@ if [ ! -f "$DIR/config/settings.json" ]; then
   "$PY" "$DIR/setup/xlrte_setup.py" || exit $?
   [ -z "$1" ] && exit 0
 fi
-if [ -z "$1" ]; then echo "Cockpit: $DIR/01_cockpit.html  ·  Befehle: ./pitwall <name>, z. B. ./pitwall render"; exit 0; fi
+if [ -z "$1" ]; then
+  echo "Cockpit: $DIR/01_cockpit.html  ·  Befehle: ./pitwall <name>, z. B. ./pitwall render"
+  { command -v open >/dev/null && open "$DIR/01_cockpit.html"; } || { command -v xdg-open >/dev/null && xdg-open "$DIR/01_cockpit.html"; } >/dev/null 2>&1 || true
+  exit 0
+fi
 NAME="$1"; shift
 exec "$PY" "$DIR/_system/$NAME.py" "$@"

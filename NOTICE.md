@@ -7,4 +7,6 @@
   Pitwall ruft keine Profile automatisch ab.
 - **Deine KI.** Recherche und Texte laufen über die KI, die du im Einrichtungs-Dialog verbunden hast, nach den Bedingungen
   dieses Anbieters.
+- **Mitgelieferte Bibliothek.** Chart.js 4.4.1 (MIT-Lizenz, © Chart.js Contributors) liegt in `_system/vendor_js/` für die
+  Diagramme ohne Internet. Die Installer enthalten eine Python-Laufzeit aus python-build-standalone (PSF-Lizenz).
 - **Keine Beratung.** Pitwall ersetzt keine Karriere-, Rechts- oder Steuerberatung.

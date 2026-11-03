@@ -29,3 +29,8 @@ __pycache__/
 
 # Pilot-Zusammenfassungen (lokal)
 feedback/
+
+# Installer-Bau (installer/build.py)
+dist/
+runtime/
+_site/

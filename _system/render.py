@@ -49,6 +49,15 @@ def load_i18n(system_dir=None):
     return "<script>window.XLRTE_LANG = %s; window.XLRTE_I18N = %s;</script><script>%s</script>" % (json.dumps(lang), cat.replace("</", "<\\/"), js)
 
 
+
+def load_chart_js():
+    """Chart.js shipped with the engine (vendor_js/, MIT) so the charts work offline; '' falls back to the CDN link in the template."""
+    try:
+        with open(os.path.join(HERE, "vendor_js", "chart.umd.min.js"), encoding="utf-8") as f:
+            return f.read().replace("</script", "<\\/script")
+    except OSError:
+        return ""
+
 def load_goal(today, system_dir=None):
     """The user's own target from preferences.json (set in setup): goal_label ("Vertrag unterschrieben") and goal_date.
     No goal set: the end of the current year, labelled neutrally. Never raises."""
@@ -538,8 +547,16 @@ def main():
         print(f"⚠️ Hinweis: Lesezone konnte nicht aufgebaut werden ({e})", file=sys.stderr)
         reader = {}
 
+    try:                    # decision matrices saved in the role folders (30 Verlauf); optional like the reading pane
+        import decision_matrix
+        decisions = decision_matrix.overview(rows, out_dir if out_dir != HERE else os.path.dirname(HERE),
+                                             (decision_matrix.load_prefs(HERE).get("ui_language") or "de"))
+    except Exception as e:
+        print(f"⚠️ Hinweis: Entscheidungsmatrizen konnten nicht gelesen werden ({e})", file=sys.stderr)
+        decisions = {}
+
     meta = dict(
-        generated=a.today, expect_rows=len(rows), hygiene=hygiene, intel=intel,
+        generated=a.today, expect_rows=len(rows), hygiene=hygiene, intel=intel, decisions=decisions,
         interviews_reached=reached,
         interview_rate=round(reached / max(len(rows), 1) * 100),
         offers=offers, days_left=days_left, rows=rows, prep=prep,
@@ -623,15 +640,16 @@ def main():
         nav=nav("Experte"),
         cards=_xv.build_expert(rows, transitions_rows, a.today, intel, intel_state, coverage, drafts, renders, _xv.scan_folders(out_dir if out_dir != HERE else os.path.dirname(HERE), rows), channels), **base
     )
+    chart_js = load_chart_js()
     out["01_cockpit.html"] = engine.render(
         "cockpit.html",
         title="Cockpit — Job Search 2026", heading="⚡ Cockpit", subtitle=sub,
-        nav=nav("Cockpit"), **base
+        nav=nav("Cockpit"), chart_js=chart_js, **base
     )
     out["02_pipeline_crm.html"] = engine.render(
         "crm.html",
         title="Pipeline CRM — Job Search 2026", heading="📊 Pipeline CRM", subtitle=sub,
-        nav=nav("Pipeline CRM"), **base
+        nav=nav("Pipeline CRM"), chart_js=chart_js, **base
     )
     out["03_briefings.html"] = engine.render(
         "brief.html",

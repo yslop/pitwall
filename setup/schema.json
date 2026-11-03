@@ -260,6 +260,38 @@
       "en": "Available from"
      },
      "type": "date"
+    },
+    {
+     "key": "decision_criteria",
+     "label": {
+      "de": "Deine Entscheidungskriterien nach einem Gespräch (eins pro Zeile)",
+      "en": "Your decision criteria after a conversation (one per line)"
+     },
+     "type": "lines",
+     "default_list": [
+      "Budget & Freigabe",
+      "Rollen-Zuschnitt",
+      "Chemie mit der Führungskraft",
+      "Gehalt & Entwicklung",
+      "Arbeitsmodell & Präsenz"
+     ],
+     "help": {
+      "de": "Daraus wird im Gesprächs-Cockpit eine Ampel-Matrix mit Empfehlung Go / Prüfen / Stopp. Deine KI kann sie pro Stelle schärfen.",
+      "en": "Becomes a traffic-light matrix with a Go / Check / Stop recommendation in the interview cockpit. Your AI can sharpen it per role."
+     }
+    },
+    {
+     "key": "decision_context",
+     "label": {
+      "de": "Dein Rahmen in einem Satz (optional)",
+      "en": "Your situation in one sentence (optional)"
+     },
+     "type": "text",
+     "default": "",
+     "placeholder": {
+      "de": "z. B. Prüfung im November, Umzug Anfang 2027, höchstens drei Pendeltage",
+      "en": "e.g. exam in November, moving early 2027, at most three commuting days"
+     }
     }
    ]
   },

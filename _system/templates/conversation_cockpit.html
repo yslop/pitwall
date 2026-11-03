@@ -56,6 +56,24 @@
 .js .ck-btn { display: inline-block; }
 .ck-hint { font-size: 11px; color: var(--muted); }
 @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .ck-sec { break-inside: avoid; } }
+/* decision matrix (12) */
+.dm-row { display: grid; grid-template-columns: minmax(150px, 1.1fr) auto minmax(160px, 2fr); gap: 10px 14px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.dm-row:last-child { border-bottom: 0; }
+.dm-label { font-weight: 700; font-size: 13.5px; }
+.dm-hint { font-size: 11.5px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+.dm-hint b { color: var(--ok, #2f7d32); font-weight: 600; } .dm-hint i { color: var(--bad, #b3261e); font-style: normal; font-weight: 600; }
+.dm-seg { display: inline-flex; border: 1px solid var(--line); border-radius: 99px; overflow: hidden; }
+.dm-seg button { border: 0; background: var(--panel); padding: 6px 11px; font-size: 12px; font-weight: 700; cursor: pointer; color: var(--muted); }
+.dm-seg button + button { border-left: 1px solid var(--line); }
+.dm-seg button.on[data-r="go"] { background: var(--ok, #2f7d32); color: #fff; }
+.dm-seg button.on[data-r="check"] { background: var(--warn, #b7791f); color: #fff; }
+.dm-seg button.on[data-r="stop"] { background: var(--bad, #b3261e); color: #fff; }
+.dm-note { width: 100%; font: inherit; font-size: 12.5px; border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; background: var(--panel); color: inherit; }
+.dm-verdict { display: flex; align-items: center; gap: 12px; margin: 4px 0 12px; padding: 12px 14px; border-radius: var(--radius); background: var(--brand-tint); }
+.dm-verdict .v { font-size: 20px; font-weight: 800; }
+.dm-verdict[data-c="go"] .v { color: var(--ok, #2f7d32); } .dm-verdict[data-c="check"] .v { color: var(--warn, #b7791f); } .dm-verdict[data-c="stop"] .v { color: var(--bad, #b3261e); }
+.dm-yard { font-size: 12.5px; margin: 0 0 10px; color: var(--muted); }
+@media (max-width: 640px) { .dm-row { grid-template-columns: 1fr; } }
 </style>
 {% endblock %}
 {% block body %}
@@ -182,6 +200,27 @@
     <p class="ck-hint">Nur in der direkt geöffneten Datei. „Sichern“ speichert <b>{{ notes_filename }}</b>; diese Datei in <b>30 Verlauf</b> dieses Verfahrens legen, dann nimmt der nächste Sync sie als Eingabe für Debrief und Nachbereitung. Zwischenstand bleibt lokal im Browser.</p>
   </div>
 
+  {% if decision %}
+  <div class="ck-sec" id="ck-entscheidung">
+    <h2>12 · {{ "Entscheidungsmatrix" if decision.lang == "de" else "Decision matrix" }}</h2>
+    {% if decision.yardstick %}<p class="dm-yard"><b>{{ "Dein Maßstab" if decision.lang == "de" else "Your yardstick" }}:</b> {{ decision.yardstick }}</p>{% endif %}
+    <div class="dm-verdict" id="dm-verdict" data-c="open"><span class="v" id="dm-v">{{ "Offen" if decision.lang == "de" else "Open" }}</span><span class="small" id="dm-count"></span></div>
+    <div id="dm-rows">
+      {% for c in decision.criteria %}
+      <div class="dm-row" data-k="{{ c.key }}">
+        <div><div class="dm-label">{{ c.label }}</div>{% if c.go or c.stop %}<div class="dm-hint">{% if c.go %}<b>{{ "Grün" if decision.lang == "de" else "Green" }}:</b> {{ c.go }}{% endif %}{% if c.go and c.stop %}<br>{% endif %}{% if c.stop %}<i>{{ "Rot" if decision.lang == "de" else "Red" }}:</i> {{ c.stop }}{% endif %}</div>{% endif %}</div>
+        <div class="dm-seg" role="group" aria-label="{{ c.label }}"><button type="button" data-r="go">{{ "Grün" if decision.lang == "de" else "Green" }}</button><button type="button" data-r="check">{{ "Gelb" if decision.lang == "de" else "Amber" }}</button><button type="button" data-r="stop">{{ "Rot" if decision.lang == "de" else "Red" }}</button></div>
+        <input class="dm-note" type="text" placeholder="{{ 'Was hast du gehört? (Beleg)' if decision.lang == 'de' else 'What did you hear? (evidence)' }}">
+      </div>
+      {% endfor %}
+    </div>
+    <textarea class="dm-note" id="dm-sum" rows="2" style="margin-top:10px" placeholder="{{ 'Fazit in einem Satz' if decision.lang == 'de' else 'Conclusion in one sentence' }}"></textarea>
+    <div class="ck-notes-bar"><button type="button" class="ck-btn" id="dm-save">{{ "Matrix sichern (.json)" if decision.lang == "de" else "Save matrix (.json)" }}</button> <button type="button" class="ck-btn" id="dm-copy">{{ "Als Text kopieren" if decision.lang == "de" else "Copy as text" }}</button> <button type="button" class="ck-btn" id="dm-reset">{{ "Zurücksetzen" if decision.lang == "de" else "Reset" }}</button></div>
+    <p class="ck-hint">{% if decision.lang == "de" %}Bewerte direkt nach dem Gespräch. Rot heißt: Ohne Klärung kein nächster Schritt. „Sichern“ speichert <b>{{ decision.filename }}</b>; die Datei in <b>30 Verlauf</b> dieses Verfahrens legen, dann zeigt das Cockpit nach dem nächsten Sync die Empfehlung.{% else %}Rate right after the conversation. Red means: no next step until it is resolved. “Save” stores <b>{{ decision.filename }}</b>; put it into <b>30 Verlauf</b> of this process and the cockpit shows the recommendation after the next sync.{% endif %}</p>
+    <script type="application/json" id="dm-data">{{ decision|tojson }}</script>
+  </div>
+  {% endif %}
+
 </div>
 {% endblock %}
 {% block script %}<script>
@@ -204,6 +243,48 @@
     if (cp) cp.addEventListener("click", function(){ try { navigator.clipboard.writeText(notesText()); cp.textContent = "Kopiert"; setTimeout(function(){ cp.textContent = "Kopieren"; }, 1400); } catch (e) {} });
     var key = "cockpit-notes-" + (document.title || "x"), box = document.getElementById("ck-notes-box");
     try { var saved = window.localStorage.getItem(key); if (saved && box) box.textContent = saved; if (box) box.addEventListener("input", function(){ window.localStorage.setItem(key, box.textContent); }); } catch (e) {}
+
+    /* decision matrix (12): ratings autosave in this browser, "save" writes the file the sync reads from 30 Verlauf */
+    var dmEl = document.getElementById("dm-data");
+    if (dmEl) {
+      var DMD = JSON.parse(dmEl.textContent), EN = DMD.lang === "en", dmKey = "pitwall-dm-" + DMD.uid + "-" + (document.title || "x");
+      var VL = EN ? { go: "Go", check: "Check", stop: "Consider stopping", open: "Open" } : { go: "Go", check: "Prüfen", stop: "Stopp prüfen", open: "Offen" };
+      var dm = { ratings: {}, notes: {}, note: "" };
+      try { var old = JSON.parse(window.localStorage.getItem(dmKey) || "null"); if (old && old.ratings) dm = old; } catch (e) {}
+      var rows = Array.prototype.slice.call(document.querySelectorAll(".dm-row"));
+      function keys() { return DMD.criteria.map(function (c) { return c.key; }); }
+      function verdict() {
+        var v = keys().map(function (k) { return dm.ratings[k] || ""; }), n = { go: 0, check: 0, stop: 0, open: 0 };
+        v.forEach(function (x) { n[x || "open"]++; });
+        var c = n.stop ? "stop" : (n.open === v.length ? "open" : (!n.open && n.check <= 1 ? "go" : "check"));
+        return { code: c, n: n, total: v.length };
+      }
+      function paint() {
+        rows.forEach(function (row) { var k = row.getAttribute("data-k"); row.querySelectorAll("button").forEach(function (b) { b.classList.toggle("on", dm.ratings[k] === b.getAttribute("data-r")); }); });
+        var r = verdict(), box = document.getElementById("dm-verdict");
+        box.setAttribute("data-c", r.code); document.getElementById("dm-v").textContent = VL[r.code];
+        document.getElementById("dm-count").textContent = EN ? (r.n.go + " green · " + r.n.check + " amber · " + r.n.stop + " red · " + r.n.open + " open")
+                                                              : (r.n.go + " grün · " + r.n.check + " gelb · " + r.n.stop + " rot · " + r.n.open + " offen");
+        try { window.localStorage.setItem(dmKey, JSON.stringify(dm)); } catch (e) {}
+      }
+      rows.forEach(function (row) {
+        var k = row.getAttribute("data-k"), inp = row.querySelector(".dm-note");
+        row.querySelectorAll("button").forEach(function (b) { b.addEventListener("click", function () { var r = b.getAttribute("data-r"); dm.ratings[k] = dm.ratings[k] === r ? "" : r; paint(); }); });
+        if (inp) { inp.value = dm.notes[k] || ""; inp.addEventListener("input", function () { dm.notes[k] = inp.value; paint(); }); }
+      });
+      var sum = document.getElementById("dm-sum"); if (sum) { sum.value = dm.note || ""; sum.addEventListener("input", function () { dm.note = sum.value; paint(); }); }
+      function payload() { var r = verdict(); return { kind: "pitwall.decision", version: 1, uid: DMD.uid, company: DMD.company, role: DMD.role, saved: new Date().toISOString(), yardstick: DMD.yardstick,
+        criteria: DMD.criteria, ratings: dm.ratings, notes: dm.notes, note: dm.note, verdict: r.code }; }
+      function asText() { var r = verdict(), out = [(EN ? "Decision matrix · " : "Entscheidungsmatrix · ") + DMD.company + " · " + DMD.role, (EN ? "Recommendation: " : "Empfehlung: ") + VL[r.code], ""];
+        var L = EN ? { go: "green", check: "amber", stop: "red", "": "open" } : { go: "grün", check: "gelb", stop: "rot", "": "offen" };
+        DMD.criteria.forEach(function (c) { out.push("- " + c.label + ": " + L[dm.ratings[c.key] || ""] + (dm.notes[c.key] ? " (" + dm.notes[c.key] + ")" : "")); });
+        if (dm.note) out.push("", dm.note); return out.join("\n"); }
+      var ds = document.getElementById("dm-save"), dc = document.getElementById("dm-copy"), dr = document.getElementById("dm-reset");
+      if (ds) ds.addEventListener("click", function () { try { var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(payload(), null, 2)], { type: "application/json" })); a.download = DMD.filename; document.body.appendChild(a); a.click(); a.remove(); } catch (e) {} });
+      if (dc) dc.addEventListener("click", function () { try { navigator.clipboard.writeText(asText()); dc.textContent = EN ? "Copied" : "Kopiert"; setTimeout(function () { dc.textContent = EN ? "Copy as text" : "Als Text kopieren"; }, 1400); } catch (e) {} });
+      if (dr) dr.addEventListener("click", function () { dm = { ratings: {}, notes: {}, note: "" }; rows.forEach(function (row) { var i = row.querySelector(".dm-note"); if (i) i.value = ""; }); if (sum) sum.value = ""; paint(); });
+      paint();
+    }
   } catch (e) {}
 })();
 </script>{% endblock %}

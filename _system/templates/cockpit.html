@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block head %}<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>{% endblock %}
+{% block head %}{% if chart_js %}<script>{{ chart_js|safe }}</script>{% else %}<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>{% endif %}{% endblock %}
 {% block body %}
 <div class="kpis" id="kpis"></div>
 <div class="grid g2" style="margin-bottom:16px">
@@ -43,6 +43,14 @@ const D = JS26.load(), R = D.rows, open = R.filter(r => r.stage !== "Closed");
 const st = s => open.filter(r => r.stage === s).length;
 const liveStages = ["Screening", "Interviewing", "Final"];
 const liveCount = open.filter(r => liveStages.includes(r.stage)).length;
+
+/* Decision matrix verdict of a process (saved from its conversation cockpit into 30 Verlauf) */
+const decChip = r => {
+  const d = (D.decisions || {})[String(r.uid).trim()];
+  if (!d) return "";
+  const col = { go: "ok", check: "warn", stop: "bad", open: "muted" }[d.code] || "muted";
+  return `<span class="chip" style="padding:2px 7px;font-size:10.5px;border-color:var(--${col});color:var(--${col})" title="Entscheidungsmatrix vom ${JS26.esc(d.saved)}: ${d.go} grün · ${d.check} gelb · ${d.stop} rot · ${d.open} offen${d.note ? " – " + JS26.esc(d.note) : ""}">⚖ ${JS26.esc(d.label)}</span>`;
+};
 
 /* Conversation cockpit (live guide, bio, panic card) of a process, when the Sync has written one */
 const cockChip = r => {
@@ -128,6 +136,7 @@ document.getElementById("live").innerHTML = `
           <div style="display:flex;gap:5px;align-items:center">
             <a href="03_briefings.html#${slug}" class="chip" style="padding:2px 7px;font-size:10.5px" onclick="event.stopPropagation()">Briefing ↗</a>
             ${cockChip(r)}
+            ${decChip(r)}
           </div>
         </td>
       </tr>`;

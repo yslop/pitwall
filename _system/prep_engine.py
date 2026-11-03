@@ -412,6 +412,11 @@ def _cockpit_context(common, row, content, lg, playbook, base_dir):
                vorschlag=ck.get("vorschlag") or {}, fuehrung=ck.get("fuehrung") or {}, questions=_ranked_questions(content), flanken=ck.get("flanken") or [],
                playbook=playbook, belegt=(ck.get("faktenhygiene") or {}).get("belegt") or [], unbelegt=(ck.get("faktenhygiene") or {}).get("unbelegt") or [],
                vorher=ck.get("vorher") or [], bio=ck.get("bio") or {}, panik=(ck.get("panik") or []) + load_panik(base_dir), title="Cockpit — %s" % row["company"], heading="Cockpit")
+    try:                                    # the decision matrix is optional: the cockpit must render without it
+        import decision_matrix as DM
+        ctx["decision"] = DM.cockpit_context(row, content, DM.load_prefs(str(SYS_DIR)), "en" if lg == "en" else "de", common.get("today", ""))
+    except Exception:
+        ctx["decision"] = None
     return ctx
 
 

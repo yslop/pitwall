@@ -2,6 +2,8 @@
 
 [English](README.en.md) · Teil von [yslop](https://github.com/yslop): *why slop?* Werkzeuge für alle, die lieber gründlich als viel machen.
 
+**[Live-Demo ansehen](https://yslop.github.io/pitwall/)**, ohne Installation, mit erfundenen Daten.
+
 ![Pitwall in 25 Sekunden: Cockpit, Stellenanalyse mit Fit-Score, Briefing, Gesprächs-Cockpit mit Panikkarte](docs/media/star_de.gif)
 
 **Pitwall ist ein lokales Bewerbungs-Cockpit mit KI-Unterstützung.** Es hilft dir, dich auf wenige, wirklich passende Stellen
@@ -11,7 +13,9 @@ Gesprächs-Cockpit mit Leitfaden, Bio für genau diese Rolle, Panikkarte und den
 > Der Arbeitsmarkt wird schneller. Wer da mithalten will, braucht nicht mehr Bewerbungen, sondern einen klaren Blick
 > darauf, welche sich lohnen, und eine Vorbereitung, die jedes Gespräch ernst nimmt. Pitwall ist dafür gebaut.
 
-<!-- HERO: 30-Sekunden-GIF Stellenanzeige → Fit-Bewertung → Gesprächs-Cockpit (docs/hero.gif) -->
+**Weniger Verwaltung, mehr Wirkung.** Statt zahlreiche Bewerbungsprozesse in Excel zu pflegen, konzentrierst du dich auf
+das, was entscheidet: deine Leistung im Gespräch und den nächsten guten Schritt in deinem Berufsleben, auch nach einer
+Kündigung oder in einer Umbruchphase. Pitwall hält Pipeline, Fristen und Recherche für dich zusammen.
 
 ## Was Pitwall anders macht
 
@@ -21,14 +25,23 @@ Gesprächs-Cockpit mit Leitfaden, Bio für genau diese Rolle, Panikkarte und den
   gekennzeichnet (INFERENZ). Ein Prüfschritt (lint) hält das ein.
 - **Deine Daten bleiben bei dir.** Alles liegt als Dateien in diesem Ordner. Kein Konto, kein Server, keine Telemetrie.
 - **Zweisprachig.** Oberfläche Deutsch und Englisch, umschaltbar unten links.
+- **Entscheiden mit Maßstab.** Nach jedem Gespräch eine Ampel-Matrix im Gesprächs-Cockpit: Budget, Rollen-Zuschnitt,
+  Chemie, Gehalt, Arbeitsmodell (oder deine eigenen Kriterien). Ein Rot ist ein Stopp-Signal; die Empfehlung Go / Prüfen /
+  Stopp steht danach im Cockpit neben dem Verfahren.
 - **Deine Zielmarke, dein Band.** Ziel („Vertrag unterschrieben“) mit Datum, Gehalts-Untergrenze und Zielgehalt legst du im Einrichtungs-Dialog fest; alles bleibt lokal.
 - **Deine KI, deine Wahl.** Claude-Abo, ChatGPT-Abo, eigener API-Schlüssel, ein EU-Anbieter oder ein lokales Modell
   (Ollama): Du verbindest, was du hast. Ohne KI läuft alles Deterministische trotzdem.
 
 ## In fünf Minuten startklar
 
-Voraussetzung: Python 3.9 oder neuer (macOS, Windows, Linux). Beim ersten Start legt `./pitwall` im Ordner eine lokale
-`.venv` an und installiert drei Pakete (Jinja2, requests, Beautiful Soup); danach läuft alles offline.
+**Am einfachsten: Installer laden.** Unter [Releases](https://github.com/yslop/pitwall/releases/latest) liegen
+`Pitwall-…-mac-arm64.dmg` (Apple Silicon), `…-mac-intel.dmg`, `…-windows-setup.exe` und `…-linux-x64.tar.gz`. Sie bringen
+ihre eigene Python-Laufzeit mit; du brauchst nichts vorher zu installieren. Die Installer sind (noch) nicht signiert:
+macOS fragt beim ersten Öffnen nach (Rechtsklick → Öffnen), Windows zeigt „Der Computer wurde durch Windows geschützt“
+(→ Weitere Informationen → Trotzdem ausführen).
+
+**Oder mit Git und Python 3.9+.** Beim ersten Start legt `./pitwall` im Ordner eine lokale `.venv` an und installiert drei
+Pakete (Jinja2, requests, Beautiful Soup); danach läuft alles offline.
 
 ```bash
 git clone https://github.com/yslop/pitwall.git
@@ -57,6 +70,8 @@ Beides archiviert nur, was die Demo angelegt hat.
 | Recherche | die wichtigste offene Frage je Verfahren zuerst | `./pitwall intel_queue --json` |
 | Gespräch vorbereiten | Briefing → Cockpit mit Leitfaden, Bio, Fragen | `./pitwall prep_engine --uid N --from-content` |
 | Nach dem Gespräch | Gedankenprotokoll in `30 Verlauf` ablegen | Markdown oder Text |
+| Entscheiden | Ampel-Matrix im Gesprächs-Cockpit, „Matrix sichern“ in `30 Verlauf` | Klick im Cockpit, dann `./pitwall render` |
+| Ziele ändern | Zielmarke, Termin, Gehaltsband, Kriterien | `./pitwall setup` (deine Daten bleiben) |
 | Überblick | Pipeline, Heute-Ansicht, Agentur-Bericht | `./pitwall render` |
 
 Die eigentliche Arbeit machst du gemeinsam mit deiner KI in diesem Ordner: Starte sie hier (z. B. `claude`) und lass

@@ -112,6 +112,7 @@ def save(payload):
     if key and spec.get("env"):
         write_env({spec["env"]: key})
     settings = load_settings()
+    rerun = bool(settings.get("setup_completed"))      # setup opened again: change goals, never reload the demo
     settings.update({
         "version": 1,
         "product": _product_name(),
@@ -132,7 +133,7 @@ def save(payload):
     try:
         sys.path.insert(0, HERE)
         import apply_product
-        msgs += apply_product.apply(ROOT, settings) or []
+        msgs += apply_product.apply(ROOT, dict(settings, _rerun=rerun)) or []
     except ImportError:
         pass
     return msgs

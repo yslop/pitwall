@@ -1,0 +1,38 @@
+name: installers
+# Builds the installers with their own Python for every published release and attaches them to it.
+# Manual run (Actions -> installers -> Run workflow) builds them as downloadable artifacts only.
+on:
+  release: {types: [published]}
+  workflow_dispatch:
+permissions: {contents: write}
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: macos-15, target: darwin-arm64}
+          - {os: macos-15-intel, target: darwin-x64}
+          - {os: windows-latest, target: windows-x64}
+          - {os: ubuntu-latest, target: linux-x64}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Build installer
+        shell: bash
+        run: python installer/build.py --target ${{ matrix.target }} --version "${{ github.event.release.tag_name || 'dev' }}" --out dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pitwall-${{ matrix.target }}
+          path: |
+            dist/*.dmg
+            dist/*.exe
+            dist/*.tar.gz
+          if-no-files-found: error
+      - name: Attach to the release
+        if: github.event_name == 'release'
+        shell: bash
+        env: {GH_TOKEN: "${{ github.token }}"}
+        run: gh release upload "${{ github.event.release.tag_name }}" dist/Pitwall-* --clobber

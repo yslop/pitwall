@@ -24,7 +24,7 @@ FORBIDDEN_SUFFIXES = {".pyc", ".dmg", ".pkg", ".exe", ".msi", ".pdf", ".docx", "
                       ".db", ".m4a", ".mp3", ".wav", ".mp4", ".mov", ".zip", ".tgz", ".gz"}
 FORBIDDEN_NAMES = {".env", "pipeline.csv", "events.csv", "transitions.csv", "profile.json", "config.json", "capability_profile.md",
                    "Bio_Bausteine.json", "Gespraechs_Playbook.json", ".DS_Store", "deployed.json", "llm_calls.jsonl", "decisions.jsonl"}
-SKIP_DIRS = {".git", "__pycache__", ".pytest_cache", "node_modules", ".venv", "venv"}
+SKIP_DIRS = {".git", "__pycache__", ".pytest_cache", "node_modules", ".venv", "venv", "dist", "runtime"}
 MAX_BYTES = 1_500_000
 
 ALLOWED_EMAIL_DOMAINS = ("example.com", "example.org", "example.net", "example.de", "users.noreply.github.com", "anthropic.com")

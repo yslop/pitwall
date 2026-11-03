@@ -1,0 +1,12 @@
+Pitwall installieren
+1. Doppelklick auf „Pitwall installieren.command“.
+   Beim ersten Mal fragt macOS nach, weil die App nicht von Apple signiert ist: Rechtsklick → Öffnen → Öffnen.
+2. Ordner wählen (Vorschlag: Dokumente/Pitwall). Die Einrichtung öffnet sich im Browser.
+3. Danach startest du Pitwall mit Doppelklick auf „pitwall“ in deinem Ordner oder öffnest 01_cockpit.html.
+Python oder andere Programme brauchst du nicht. Deine Daten bleiben in dem Ordner, den du wählst.
+
+Install Pitwall
+1. Double-click “Pitwall installieren.command”. The first time, macOS asks because the app is not signed by Apple: right-click → Open → Open.
+2. Choose a folder (suggested: Documents/Pitwall). Setup opens in your browser.
+3. Afterwards start Pitwall by double-clicking “pitwall” in your folder or open 01_cockpit.html.
+No Python or other software needed. Your data stays in the folder you choose.
