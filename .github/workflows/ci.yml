@@ -11,7 +11,8 @@ jobs:
       fail-fast: false
       matrix:
         # private (pilot week): Linux only, to save Actions minutes; public: Linux + macOS (Windows: see ROADMAP)
-        os: ${{ github.event.repository.private && fromJSON('["ubuntu-latest"]') || fromJSON('["ubuntu-latest","macos-latest"]') }}
+        # ubuntu-22.04 pinned, not -latest: the -latest image moved to 26.04, which setup-python has no 3.9 build for
+        os: ${{ github.event.repository.private && fromJSON('["ubuntu-22.04"]') || fromJSON('["ubuntu-22.04","macos-latest"]') }}
         python: ["3.9", "3.12"]
     steps:
       - uses: actions/checkout@v4
