@@ -1,19 +1,26 @@
 name: installers
 # Builds the installers with their own Python for every published release and attaches them to it.
-# Manual run (Actions -> installers -> Run workflow): with a tag (e.g. v0.2.0) the files are attached to that release,
-# without one they are only kept as downloadable artifacts of the run.
+# Manual run (Actions -> installers -> Run workflow): "ref" picks what to build (empty = this run's own ref, e.g. main),
+# "attach_to_release" picks which published release's assets to update (empty = keep the build as a downloadable
+# artifact only). They're separate so a release can be repaired from a newer ref without moving its tag.
 on:
   release: {types: [published]}
   workflow_dispatch:
     inputs:
-      tag:
-        description: "Release-Tag zum Anhängen (z. B. v0.2.0); leer = nur Artefakte"
+      ref:
+        description: "Build from this branch/tag/sha; leer = der Ref, gegen den dieser Lauf gestartet wurde"
+        required: false
+        default: ""
+      attach_to_release:
+        description: "Diesem Release die Dateien anhängen (z. B. v0.2.0); leer = nur Artefakte"
         required: false
         default: ""
 permissions: {contents: write}
 env:
   PYTHONUTF8: "1"
-  TAG: ${{ github.event.release.tag_name || inputs.tag }}
+  BUILD_REF: ${{ github.event.release.tag_name || inputs.ref || github.ref }}
+  ATTACH_TAG: ${{ github.event.release.tag_name || inputs.attach_to_release }}
+  VERSION: ${{ github.event.release.tag_name || inputs.attach_to_release || inputs.ref || 'dev' }}
 jobs:
   build:
     strategy:
@@ -27,7 +34,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
-        with: {ref: "${{ env.TAG || github.ref }}"}
+        with: {ref: "${{ env.BUILD_REF }}"}
       - uses: actions/setup-python@v6
         with: {python-version: "3.12"}
       - name: Inno Setup (Windows only, the runner image no longer ships it)
@@ -38,7 +45,7 @@ jobs:
           & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /? | Select-Object -First 1
       - name: Build installer
         shell: bash
-        run: python installer/build.py --target ${{ matrix.target }} --version "${TAG:-dev}" --out dist
+        run: python installer/build.py --target ${{ matrix.target }} --version "${VERSION:-dev}" --out dist
       - uses: actions/upload-artifact@v5
         with:
           name: pitwall-${{ matrix.target }}
@@ -48,7 +55,7 @@ jobs:
             dist/*.tar.gz
           if-no-files-found: error
       - name: Attach to the release
-        if: env.TAG != ''
+        if: env.ATTACH_TAG != ''
         shell: bash
         env: {GH_TOKEN: "${{ github.token }}"}
-        run: gh release upload "$TAG" dist/Pitwall-* --clobber
+        run: gh release upload "$ATTACH_TAG" dist/Pitwall-* --clobber
