@@ -4,7 +4,7 @@
 
 **[Try the live demo](https://yslop.github.io/pitwall/)**, no installation, made-up data.
 
-![Pitwall in 25 seconds: cockpit, job-ad analysis with fit score, briefing, interview cockpit with panic card](docs/media/star_en.gif)
+![Pitwall in 25 seconds: cockpit, job-ad analysis with fit score, briefing, interview cockpit with panic card](docs/media/pitwall_en.gif)
 
 **Pitwall is a local, AI-assisted job-search cockpit.** It helps you focus on a few roles that really fit and prepare every
 conversation thoroughly: pipeline, staged research, briefing and an interview cockpit with a conversation guide, a bio

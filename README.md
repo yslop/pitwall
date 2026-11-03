@@ -4,7 +4,7 @@
 
 **[Live-Demo ansehen](https://yslop.github.io/pitwall/)**, ohne Installation, mit erfundenen Daten.
 
-![Pitwall in 25 Sekunden: Cockpit, Stellenanalyse mit Fit-Score, Briefing, Gesprächs-Cockpit mit Panikkarte](docs/media/star_de.gif)
+![Pitwall in 25 Sekunden: Cockpit, Stellenanalyse mit Fit-Score, Briefing, Gesprächs-Cockpit mit Panikkarte](docs/media/pitwall_de.gif)
 
 **Pitwall ist ein lokales Bewerbungs-Cockpit mit KI-Unterstützung.** Es hilft dir, dich auf wenige, wirklich passende Stellen
 zu konzentrieren und jedes Gespräch gründlich vorzubereiten: Pipeline, stufengesteuerte Recherche, Briefing und ein
