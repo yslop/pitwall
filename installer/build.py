@@ -80,6 +80,7 @@ def make_payload(dest, runtime_archive, target):
 
 
 def build(target, version, out):
+    out = os.path.abspath(out)
     os.makedirs(out, exist_ok=True)
     work = os.path.join(out, "_work")
     os.makedirs(work, exist_ok=True)
