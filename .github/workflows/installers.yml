@@ -1,10 +1,19 @@
 name: installers
 # Builds the installers with their own Python for every published release and attaches them to it.
-# Manual run (Actions -> installers -> Run workflow) builds them as downloadable artifacts only.
+# Manual run (Actions -> installers -> Run workflow): with a tag (e.g. v0.2.0) the files are attached to that release,
+# without one they are only kept as downloadable artifacts of the run.
 on:
   release: {types: [published]}
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release-Tag zum Anhängen (z. B. v0.2.0); leer = nur Artefakte"
+        required: false
+        default: ""
 permissions: {contents: write}
+env:
+  PYTHONUTF8: "1"
+  TAG: ${{ github.event.release.tag_name || inputs.tag }}
 jobs:
   build:
     strategy:
@@ -13,17 +22,24 @@ jobs:
         include:
           - {os: macos-15, target: darwin-arm64}
           - {os: macos-15-intel, target: darwin-x64}
-          - {os: windows-latest, target: windows-x64}
-          - {os: ubuntu-latest, target: linux-x64}
+          - {os: windows-2025, target: windows-x64}
+          - {os: ubuntu-24.04, target: linux-x64}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+        with: {ref: "${{ env.TAG || github.ref }}"}
+      - uses: actions/setup-python@v6
         with: {python-version: "3.12"}
+      - name: Inno Setup (Windows only, the runner image no longer ships it)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup -y --no-progress }
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" /? | Select-Object -First 1
       - name: Build installer
         shell: bash
-        run: python installer/build.py --target ${{ matrix.target }} --version "${{ github.event.release.tag_name || 'dev' }}" --out dist
-      - uses: actions/upload-artifact@v4
+        run: python installer/build.py --target ${{ matrix.target }} --version "${TAG:-dev}" --out dist
+      - uses: actions/upload-artifact@v5
         with:
           name: pitwall-${{ matrix.target }}
           path: |
@@ -32,7 +48,7 @@ jobs:
             dist/*.tar.gz
           if-no-files-found: error
       - name: Attach to the release
-        if: github.event_name == 'release'
+        if: env.TAG != ''
         shell: bash
         env: {GH_TOKEN: "${{ github.token }}"}
-        run: gh release upload "${{ github.event.release.tag_name }}" dist/Pitwall-* --clobber
+        run: gh release upload "$TAG" dist/Pitwall-* --clobber
