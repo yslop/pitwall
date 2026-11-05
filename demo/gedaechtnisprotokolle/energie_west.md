@@ -1,4 +1,4 @@
-# Gedankenprotokoll · {{FIRMA}} · {{ROLLE}}
+# Gedächtnisprotokoll · {{FIRMA}} · {{ROLLE}}
 _Datum: {{DATUM}} · eigene Notizen direkt nach dem Gespräch · fiktive Demo-Daten (Alex Muster)_
 
 ## Kontext

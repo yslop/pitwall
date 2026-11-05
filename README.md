@@ -58,7 +58,7 @@ Lieber im Terminal? `python3 setup/xlrte_setup.py --cli`
 ### Mit Beispieldaten ausprobieren
 
 Im Dialog ist „Mit Beispieldaten starten“ vorausgewählt: Die fiktive Person **Alex Muster** bringt 40 Verfahren in allen
-Stufen und einige Gedankenprotokolle mit. Entfernen mit `python3 demo/load_demo.py --remove` und `./pitwall kit_demo --remove`.
+Stufen und einige Gedächtnisprotokolle mit. Entfernen mit `python3 demo/load_demo.py --remove` und `./pitwall kit_demo --remove`.
 Beides archiviert nur, was die Demo angelegt hat.
 
 ## So arbeitest du damit
@@ -69,7 +69,7 @@ Beides archiviert nur, was die Demo angelegt hat.
 | Verlauf einspielen | bisherige Suche aus Excel, Notion oder Notizen | `./pitwall kit_import verlauf.csv` (Vorschau), dann `--apply` |
 | Recherche | die wichtigste offene Frage je Verfahren zuerst | `./pitwall intel_queue --json` |
 | Gespräch vorbereiten | Briefing → Cockpit mit Leitfaden, Bio, Fragen | `./pitwall prep_engine --uid N --from-content` |
-| Nach dem Gespräch | Gedankenprotokoll in `30 Verlauf` ablegen | Markdown oder Text |
+| Nach dem Gespräch | Gedächtnisprotokoll in `30 Verlauf` ablegen | Markdown oder Text |
 | Entscheiden | Ampel-Matrix im Gesprächs-Cockpit, „Matrix sichern“ in `30 Verlauf` | Klick im Cockpit, dann `./pitwall render` |
 | Ziele ändern | Zielmarke, Termin, Gehaltsband, Kriterien | `./pitwall setup` (deine Daten bleiben) |
 | Überblick | Pipeline, Heute-Ansicht, Agentur-Bericht | `./pitwall render` |

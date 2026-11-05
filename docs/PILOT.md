@@ -8,7 +8,7 @@ Aufwand: **30 Minuten Einrichtung**, danach **10–15 Minuten pro Tag**, und dre
 ## Was du bekommst
 
 - Ein Cockpit für wenige, wichtige Bewerbungen: Pipeline, Zielmarke, Recherche-Reihenfolge, Gesprächs-Cockpit.
-- Eine Struktur für Gedankenprotokolle nach jedem Gespräch.
+- Eine Struktur für Gedächtnisprotokolle nach jedem Gespräch.
 - Den Wochenbudget-Gedanken: weniger, aber gründlicher.
 
 ## Einrichtung (Mac, Windows, Linux)

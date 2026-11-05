@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Load the fictional demo persona "Alex Muster" into this folder: 40 job-search processes in every stage and a few
-Gedankenprotokolle (own notes written right after a conversation). Everything is invented; every company name starts
+Gedächtnisprotokolle (own notes written right after a conversation). Everything is invented; every company name starts
 with "Beispiel" and every web address is a reserved example domain.
 
     python3 demo/load_demo.py            # add (dates are relative to today, so the cockpit looks current)
@@ -99,15 +99,15 @@ def add(today):
         folders.append(os.path.relpath(folder, ROOT))
         proto = _rest[-1]
         if proto:
-            src = os.path.join(HERE, "gedankenprotokolle", proto)
+            src = os.path.join(HERE, "gedaechtnisprotokolle", proto)
             day = (today - datetime.timedelta(days=_rest[2])).isoformat()
-            dst = os.path.join(folder, kit_import._safe(r), "30 Verlauf", "%s_Gedankenprotokoll.md" % day)
+            dst = os.path.join(folder, kit_import._safe(r), "30 Verlauf", "%s_Gedächtnisprotokoll.md" % day)
             with open(src, encoding="utf-8") as fi, open(dst, "w", encoding="utf-8") as fo:
                 fo.write(fi.read().replace("{{DATUM}}", day).replace("{{FIRMA}}", c).replace("{{ROLLE}}", r))
             notes += 1
     with open(MARKER, "w", encoding="utf-8") as f:
         json.dump({"uids": [x["uid"] for x in res["rows"]], "folders": folders, "added": today.isoformat()}, f, ensure_ascii=False, indent=1)
-    print("Demo-Persona Alex Muster: %d Verfahren, %d Gedankenprotokolle angelegt." % (res["added"], notes))
+    print("Demo-Persona Alex Muster: %d Verfahren, %d Gedächtnisprotokolle angelegt." % (res["added"], notes))
     _render(today)
     return 0
 

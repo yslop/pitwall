@@ -9,7 +9,7 @@ Stand: 0.1 (erste öffentliche Ausgabe). Prioritäten können sich nach Rückmel
 
 ## 0.3 – Besser vorbereiten
 - Leitfaden-Bibliothek: Gesprächstypen (HR, Fachbereich, Panel, Assessment) als austauschbare Vorlagen
-- Gedankenprotokoll-Vorlage mit Lernschleife: Was nehme ich ins nächste Gespräch mit?
+- Gedächtnisprotokoll-Vorlage mit Lernschleife: Was nehme ich ins nächste Gespräch mit?
 - Agentur-für-Arbeit-Bericht als Vorlage für andere Länder
 
 ## Später
