@@ -134,7 +134,7 @@ def build_expert(rows, transitions, today, intel=None, intel_state=None, coverag
             checks.append(_item(bool(debrief_after) or not last_talk, "Debrief zum letzten Gespräch",
                                 debrief_after[-1][1] if debrief_after else ("kein Gespräch in transitions.csv" if not last_talk else ""),
                                 "" if (debrief_after or not last_talk) else "Nach dem Gespräch: intel_job.py --uid %s --after-interview" % uid))
-            checks.append(_item(bool(transcripts), "Transkript oder Notizen abgelegt", transcripts[-1] if transcripts else "",
+            checks.append(_item(bool(transcripts), "Notizen oder Gedächtnisprotokoll abgelegt", transcripts[-1] if transcripts else "",
                                 "" if transcripts else "In 30 Verlauf ablegen (Datei oder eigene Mitschrift benennen)"))
             follow = stage in FOLLOW_UP_DAYS and idle > FOLLOW_UP_DAYS[stage]
             checks.append(_item(not follow, "Nachfassen", "%d Tage seit dem letzten Ereignis" % idle if follow else "kein Nachfassen nötig",

@@ -117,7 +117,7 @@ def test_the_after_interview_job_names_transcripts_notes_debrief_and_the_changes
     res = J.run_job("215", system, base, "2026-09-26", after=True, locate=locate)
     t = open(res["file"], encoding="utf-8").read()
     assert os.path.basename(res["file"]) == "Nachbereitung_Auftrag_Acme_AG_Lagebild.md" and res["version"] == 2 and t.startswith("# Nachbereitungsauftrag")
-    assert "Mitschrift_Transkript_2026-09-25.txt" in t and "Notizen Gespräch.md" in t and "Einladung.pdf" not in t.split("Transkripte und Notizen")[1].split("\n")[0]
+    assert "Mitschrift_Transkript_2026-09-25.txt" in t and "Notizen Gespräch.md" in t and "Einladung.pdf" not in t.split("Notizen und Gedächtnisprotokoll zum Gespräch")[1].split("\n")[0]
     assert "Debrief_Acme_AG_2026-09-26.md" in t and "Änderungen seit v1" in t and "Acme_AG_Briefing_2026-09-26_v2.md" in t and "Mitschrift" in t
 
 

@@ -70,7 +70,7 @@ def test_the_checklist_flags_what_is_missing_after_the_last_conversation():
     t = [tr(2, "2026-09-24")]
     c = cards([prow(2)], transitions=t, scan={"2": {"debriefs": [], "transcripts": []}})[0]
     assert check(c, "Debrief zum letzten Gespräch")["ok"] == "" and "--after-interview" in check(c, "Debrief zum letzten Gespräch")["todo"]
-    assert check(c, "Transkript oder Notizen abgelegt")["ok"] == "" and check(c, "Briefing oder Cheat Sheet")["ok"] == "" and c["open_items"] == 3
+    assert check(c, "Notizen oder Gedächtnisprotokoll abgelegt")["ok"] == "" and check(c, "Briefing oder Cheat Sheet")["ok"] == "" and c["open_items"] == 3
     done = cards([prow(2)], transitions=t, scan={"2": {"debriefs": [("2026-09-25", "Debrief_X_2026-09-25.md")], "transcripts": ["Notizen.md"]}},
                  intel_state={"2": {"docs": {"briefing:": {"doc": "briefing", "latest": "v1", "versions": {"v1": {"result": "pass"}}}}}})[0]
     assert done["open_items"] == 0 and check(done, "Briefing oder Cheat Sheet")["detail"] == "Briefing v1 · Lint: bestanden"

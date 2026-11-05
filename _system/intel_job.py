@@ -127,7 +127,7 @@ def build_text(row, uid, folder, base_dir, system, today, language, doc, person,
          "## Ziel"]
     if after:
         o += ["Nach einem Gespräch: (a) einen Debrief schreiben und (b) die nächste Version von %s erstellen, mit dem, was das Gespräch gebracht hat. "
-              "Grundlage sind Transkript und Notizen (unten), nicht Vermutungen. **Nichts wird gesendet.**" % d["label"]]
+              "Grundlage sind Notizen und Gedächtnisprotokoll (unten), nicht Vermutungen. **Nichts wird gesendet.**" % d["label"]]
     else:
         o += ["Schreibe %s (%s) so, dass der Bewerber ein Gespräch auf Augenhöhe über Organisation und Markt führen kann. Recherchiere selbst im Web mit öffentlichen Quellen. "
               "**Nichts wird gesendet.**" % (d["label"], d["pages"])]
@@ -138,13 +138,13 @@ def build_text(row, uid, folder, base_dir, system, today, language, doc, person,
           "- Input Brief (Positionierung des Bewerbers, falls vorhanden): " + (", ".join("`%s`" % os.path.join(vorb, n) for n in role_files(folder, "20 Vorbereitung") if n.startswith("CV_CL_Input_Brief")) or "(keiner)"),
           "- Frühere Intel-Dokumente (nicht wiederholen, weiterentwickeln): " + (", ".join("`%s`" % p for p in earlier) or "(keine)")]
     if after:
-        o += ["- Transkripte und Notizen zum Gespräch: " + (", ".join("`%s`" % p for p in sources) or "(keine Datei in 30 Verlauf gefunden: Transkript dort ablegen oder Aufnahme benennen)"),
-              "  Eine Aufnahme kann auch ein Gedankenprotokoll oder eine eigene Mitschrift sein. Transkripte und Notizen bleiben in Drive, zitiere sparsam.",
+        o += ["- Notizen und Gedächtnisprotokoll zum Gespräch: " + (", ".join("`%s`" % p for p in sources) or "(keine Datei in 30 Verlauf gefunden: Notizen dort ablegen oder Gedächtnisprotokoll benennen)"),
+              "  Eine Aufnahme kann auch ein Gedächtnisprotokoll oder eine eigene Mitschrift sein. Notizen und Gedächtnisprotokoll bleiben in Drive, zitiere sparsam.",
               "- E-Mails und Terminhinweise dieses Verfahrens (Gmail, Kalender), soweit die Sitzung Zugriff hat"]
     o += ["", "## Pflichtabschnitte (Überschriften genau so oder sinngemäß)"] + ["%d. %s" % (i, s) for i, s in enumerate(d["sections"], 1)]
     o += ["Zusätzlich immer: **Offen / nicht verifiziert** (was du nicht belegen oder abrufen konntest, z. B. gesperrte Seiten, Bezahlschranken, fehlende Treffer, ungeprüfte Personen oder Rollen; steht nichts offen, schreibe „keine“)."]
     if after and target_version >= 2:
-        o += ["", "Zusätzlich im neuen Dokument: **Änderungen seit v%d** (was neu ist, welche INFERENCE jetzt FACT ist mit Quelle: Transkript und Zeitpunkt oder Notiz, "
+        o += ["", "Zusätzlich im neuen Dokument: **Änderungen seit v%d** (was neu ist, welche INFERENCE jetzt FACT ist mit Quelle: Gedächtnisprotokoll und Zeitpunkt oder Notiz, "
               "das Profil des nächsten Gesprächspartners, aktualisierte Fragen)." % (target_version - 1)]
     o += ["", "## Recherche- und Schreibregeln (verbindlich)",
           "1. Nur öffentliche Quellen und die Eingaben oben. Zu Einzelpersonen nur öffentliche berufliche Informationen (Funktion, Werdegang, öffentliche Äußerungen), nichts Privates.",
