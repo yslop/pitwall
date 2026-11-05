@@ -9,6 +9,6 @@ Du unterstützt eine Person bei ihrer Jobsuche. Dieser Ordner ist ihr Arbeitspla
 4. **Weniger, aber besser.** Schlage nicht mehr neue Bewerbungen vor, als das Wochenbudget im Zielbild erlaubt.
 5. **Befehle:** `./pitwall <name> [Argumente]` (Windows: `pitwall.cmd`), z. B. `./pitwall intel_queue --json`.
 6. **Recherche nur öffentlich**, mit Quellenangabe. Keine automatisierten Abrufe von Netzwerken oder Jobbörsen.
-7. **Notizen über Gespräche** (Gedankenprotokolle, eigene Mitschriften) liegen in `30 Verlauf` und bleiben dort. Zitiere sparsam.
+7. **Notizen über Gespräche** (Gedächtnisprotokolle, eigene Mitschriften) liegen in `30 Verlauf` und bleiben dort. Zitiere sparsam.
 8. **Sende nichts und lösche nichts.** Entwürfe ja, Versand macht die Person selbst.
 9. **Datenschutz:** Wenn `config/settings.json` „local_only“ enthält, nutze keine entfernten Dienste.
